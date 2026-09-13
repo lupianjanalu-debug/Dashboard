@@ -1,0 +1,1814 @@
+<!DOCTYPE html>
+<html lang="id" class="h-full bg-slate-50">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Capaian Indikator Mutu Unit Penunjang RSUD Dr. H. Soemarno Sosroatmodjo 2026</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        hospital: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            500: '#0284c7',
+                            600: '#0369a1',
+                            700: '#035485',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        @media print {
+            .no-print { display: none !important; }
+            .print-only { display: block !important; }
+        }
+    </style>
+</head>
+<body class="h-full text-slate-800 flex flex-col min-h-screen custom-scrollbar">
+
+    <header class="bg-gradient-to-r from-hospital-900 via-hospital-800 to-slate-900 text-white shadow-lg sticky top-0 z-30 no-print">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <div class="flex items-center space-x-3">
+                    <div class="w-12 h-12 rounded-xl bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-hospital-100 shadow-inner">
+                        <i class="fa-solid fa-hospital-user text-2xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-xl sm:text-2xl font-bold tracking-tight text-white leading-tight">
+                            Capaian Indikator Mutu Unit Penunjang
+                        </h1>
+                        <p class="text-xs sm:text-sm text-hospital-100/90 font-medium">
+                            RSUD Dr. H. Soemarno Sosroatmodjo — Tahun 2026 (Januari–Desember)
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Global Action Toolbar -->
+                <div class="flex flex-wrap items-center gap-2 sm:gap-3">
+                    <!-- Auth Status Indicator & Login/Logout Button -->
+                    <div id="authBadge" class="flex items-center gap-2 bg-white/10 px-3 py-1.5 rounded-lg border border-white/20 text-xs">
+                        <span id="authStatusDot" class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+                        <span id="authStatusText" class="font-medium text-amber-200">Mode Lihat</span>
+                    </div>
+
+                    <button id="authActionBtn" onclick="toggleAuthAction()" class="bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold text-xs sm:text-sm px-3 py-2 rounded-lg transition flex items-center gap-1.5 shadow-sm">
+                        <i id="authActionIcon" class="fa-solid fa-lock"></i>
+                        <span id="authActionLabel">Login Petugas</span>
+                    </button>
+
+                    <!-- Global Month Selector -->
+                    <div class="relative inline-block text-left">
+                        <select id="globalMonthSelect" onchange="handleMonthChange(this.value)" class="bg-white/10 text-white border border-white/20 hover:bg-white/20 text-xs sm:text-sm font-semibold rounded-lg px-3 py-2 pr-8 focus:outline-none focus:ring-2 focus:ring-hospital-100 transition duration-150 cursor-pointer">
+                            <optgroup label="Tahun & Triwulan" class="bg-white text-hospital-800 font-bold">
+                                <option value="2026-YEAR" class="bg-white text-slate-900 font-bold py-1">Tahun 2026 (1 Tahun)</option>
+                                <option value="2026-TW1" class="bg-white text-slate-900 font-bold py-1">Triwulan 1 (Jan–Mar 2026)</option>
+                                <option value="2026-TW2" class="bg-white text-slate-900 font-bold py-1">Triwulan 2 (Apr–Jun 2026)</option>
+                                <option value="2026-TW3" class="bg-white text-slate-900 font-bold py-1">Triwulan 3 (Jul–Sep 2026)</option>
+                                <option value="2026-TW4" class="bg-white text-slate-900 font-bold py-1">Triwulan 4 (Okt–Des 2026)</option>
+                            </optgroup>
+                            <optgroup label="Evaluasi Bulanan (2026)" class="bg-white text-slate-500 font-semibold">
+                                <option value="2026-01" class="bg-white text-slate-900 py-1">Januari 2026</option>
+                                <option value="2026-02" class="bg-white text-slate-900 py-1">Februari 2026</option>
+                                <option value="2026-03" class="bg-white text-slate-900 py-1">Maret 2026</option>
+                                <option value="2026-04" class="bg-white text-slate-900 py-1" selected>April 2026</option>
+                                <option value="2026-05" class="bg-white text-slate-900 py-1">Mei 2026</option>
+                                <option value="2026-06" class="bg-white text-slate-900 py-1">Juni 2026</option>
+                                <option value="2026-07" class="bg-white text-slate-900 py-1">Juli 2026</option>
+                                <option value="2026-08" class="bg-white text-slate-900 py-1">Agustus 2026</option>
+                                <option value="2026-09" class="bg-white text-slate-900 py-1">September 2026</option>
+                                <option value="2026-10" class="bg-white text-slate-900 py-1">Oktober 2026</option>
+                                <option value="2026-11" class="bg-white text-slate-900 py-1">November 2026</option>
+                                <option value="2026-12" class="bg-white text-slate-900 py-1">Desember 2026</option>
+                            </optgroup>
+                        </select>
+                    </div>
+
+                    <!-- Dropdown Export / Data Ops -->
+                    <button onclick="exportJSON()" title="Export JSON" class="bg-white/10 hover:bg-white/20 text-white p-2 text-xs sm:text-sm rounded-lg transition">
+                        <i class="fa-solid fa-file-export"></i>
+                    </button>
+                    <label id="importLabelBtn" title="Import JSON (Khusus Petugas)" class="bg-white/10 opacity-60 cursor-not-allowed text-white p-2 text-xs sm:text-sm rounded-lg transition">
+                        <i class="fa-solid fa-file-import"></i>
+                        <input type="file" id="importFileInput" accept=".json" onchange="handleImportWithAuth(event)" disabled class="hidden">
+                    </label>
+                    <button onclick="exportCSV()" title="Export CSV" class="bg-emerald-600 hover:bg-emerald-700 text-white p-2 text-xs sm:text-sm rounded-lg transition">
+                        <i class="fa-solid fa-file-excel"></i>
+                    </button>
+                    <button id="resetDataBtn" onclick="handleResetWithAuth()" title="Reset Default (Khusus Petugas)" class="bg-rose-600/50 cursor-not-allowed text-white p-2 text-xs sm:text-sm rounded-lg transition">
+                        <i class="fa-solid fa-rotate-left"></i>
+                    </button>
+                </div>
+            </div>
+
+            <nav class="flex space-x-1 sm:space-x-4 mt-4 border-t border-white/10 pt-3 overflow-x-auto custom-scrollbar">
+                <button id="tab-btn-dashboard" onclick="switchTab('dashboard')" class="tab-btn active text-white bg-white/10 font-semibold text-xs sm:text-sm px-3 sm:px-4 py-2 rounded-md transition flex items-center gap-2 whitespace-nowrap">
+                    <i class="fa-solid fa-chart-pie"></i>
+                    <span>Dashboard Mode</span>
+                </button>
+                <button id="tab-btn-input" onclick="switchTab('input')" class="tab-btn text-white/70 hover:text-white hover:bg-white/5 font-medium text-xs sm:text-sm px-3 sm:px-4 py-2 rounded-md transition flex items-center gap-2 whitespace-nowrap">
+                    <i class="fa-solid fa-list-check"></i>
+                    <span>Form Input Bulanan</span>
+                    <i id="navInputLockIcon" class="fa-solid fa-lock text-xs text-amber-300"></i>
+                </button>
+                <button id="tab-btn-trend" onclick="switchTab('trend')" class="tab-btn text-white/70 hover:text-white hover:bg-white/5 font-medium text-xs sm:text-sm px-3 sm:px-4 py-2 rounded-md transition flex items-center gap-2 whitespace-nowrap">
+                    <i class="fa-solid fa-chart-line"></i>
+                    <span>Analisis Tren</span>
+                </button>
+                <button id="tab-btn-rekap" onclick="switchTab('rekap')" class="tab-btn text-white/70 hover:text-white hover:bg-white/5 font-medium text-xs sm:text-sm px-3 sm:px-4 py-2 rounded-md transition flex items-center gap-2 whitespace-nowrap">
+                    <i class="fa-solid fa-table-cells"></i>
+                    <span>Matrix Heatmap</span>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+        <section id="view-dashboard" class="space-y-6">
+            <!-- Active Month Alert Banner -->
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+                <div class="flex items-center space-x-3">
+                    <span class="p-2.5 rounded-lg bg-hospital-50 text-hospital-600 font-bold">
+                        <i class="fa-regular fa-calendar-days text-xl"></i>
+                    </span>
+                    <div>
+                        <span class="text-xs uppercase tracking-wider text-slate-500 font-bold">Bulan / Periode Evaluasi Aktif</span>
+                        <h2 id="currentSelectedMonthTitle" class="text-lg font-bold text-slate-800">April 2026</h2>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span id="compliancePercentageBadge" class="px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                        Kepatuhan Mutu: 0%
+                    </span>
+                </div>
+            </div>
+
+            <!-- KPI Cards Grid -->
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 hover:shadow-md transition">
+                    <div class="flex items-center justify-between text-slate-500 mb-2">
+                        <span class="text-xs font-semibold uppercase">Total Unit</span>
+                        <i class="fa-solid fa-hospital text-hospital-500"></i>
+                    </div>
+                    <div id="kpi-total-unit" class="text-2xl font-extrabold text-slate-800">0</div>
+                    <div class="text-[11px] text-slate-500 mt-1">Unit Penunjang</div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 hover:shadow-md transition">
+                    <div class="flex items-center justify-between text-slate-500 mb-2">
+                        <span class="text-xs font-semibold uppercase">Indikator</span>
+                        <i class="fa-solid fa-clipboard-list text-slate-600"></i>
+                    </div>
+                    <div id="kpi-total-indikator" class="text-2xl font-extrabold text-slate-800">0</div>
+                    <div class="text-[11px] text-slate-500 mt-1">Total Indikator</div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-sm border border-emerald-200 bg-emerald-50/20 p-4 hover:shadow-md transition">
+                    <div class="flex items-center justify-between text-emerald-700 mb-2">
+                        <span class="text-xs font-semibold uppercase">Tercapai</span>
+                        <i class="fa-solid fa-circle-check text-emerald-600"></i>
+                    </div>
+                    <div id="kpi-tercapai" class="text-2xl font-extrabold text-emerald-700">0</div>
+                    <div class="text-[11px] text-emerald-600 font-medium mt-1">Memenuhi Standar</div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-sm border border-rose-200 bg-rose-50/20 p-4 hover:shadow-md transition">
+                    <div class="flex items-center justify-between text-rose-700 mb-2">
+                        <span class="text-xs font-semibold uppercase">Tidak Tercapai</span>
+                        <i class="fa-solid fa-circle-xmark text-rose-600"></i>
+                    </div>
+                    <div id="kpi-tidak-tercapai" class="text-2xl font-extrabold text-rose-700">0</div>
+                    <div class="text-[11px] text-rose-600 font-medium mt-1">Di Bawah Standar</div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 hover:shadow-md transition">
+                    <div class="flex items-center justify-between text-slate-400 mb-2">
+                        <span class="text-xs font-semibold uppercase">Belum Data</span>
+                        <i class="fa-solid fa-hourglass-start text-slate-400"></i>
+                    </div>
+                    <div id="kpi-belum-ada-data" class="text-2xl font-extrabold text-slate-500">0</div>
+                    <div class="text-[11px] text-slate-400 mt-1">Kosong / Belum Diisi</div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-sm border border-amber-200 bg-amber-50/20 p-4 hover:shadow-md transition">
+                    <div class="flex items-center justify-between text-amber-700 mb-2">
+                        <span class="text-xs font-semibold uppercase">Validasi / Info</span>
+                        <i class="fa-solid fa-triangle-exclamation text-amber-500"></i>
+                    </div>
+                    <div id="kpi-validasi-info" class="text-2xl font-extrabold text-amber-700">0</div>
+                    <div class="text-[11px] text-amber-600 font-medium mt-1">Perlu Perhatian</div>
+                </div>
+            </div>
+
+            <!-- Visual Charts Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <div class="lg:col-span-5 bg-white rounded-xl shadow-sm border border-slate-200 p-5">
+                    <div class="flex items-center justify-between mb-4 pb-2 border-b border-slate-100">
+                        <h3 class="text-base font-bold text-slate-800 flex items-center gap-2">
+                            <i class="fa-solid fa-chart-pie text-hospital-500"></i>
+                            Distribusi Status Indikator
+                        </h3>
+                        <span class="text-xs text-slate-400">Bulan Ini</span>
+                    </div>
+                    <div class="relative h-64 flex items-center justify-center">
+                        <canvas id="donutStatusChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-7 bg-white rounded-xl shadow-sm border border-slate-200 p-5">
+                    <div class="flex items-center justify-between mb-4 pb-2 border-b border-slate-100">
+                        <h3 class="text-base font-bold text-slate-800 flex items-center gap-2">
+                            <i class="fa-solid fa-chart-column text-hospital-500"></i>
+                            Ketercapaian per Unit Pelayanan
+                        </h3>
+                        <span class="text-xs text-slate-400">Jumlah Indikator Tercapai</span>
+                    </div>
+                    <div class="h-64">
+                        <canvas id="barUnitChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filter & Search Toolbar -->
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 space-y-4">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
+                    <div class="flex items-center space-x-2">
+                        <i class="fa-solid fa-filter text-hospital-500"></i>
+                        <h3 class="font-bold text-slate-800 text-sm sm:text-base">Filter & Pencarian Detail</h3>
+                    </div>
+                    <button onclick="resetFilters()" class="text-xs text-hospital-600 hover:text-hospital-800 font-semibold flex items-center gap-1 self-end md:self-auto">
+                        <i class="fa-solid fa-arrow-rotate-left"></i> Reset Filter
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Cari Indikator</label>
+                        <div class="relative">
+                            <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-xs"></i>
+                            <input type="text" id="filterSearch" oninput="applyFilters()" placeholder="Ketik kata kunci..." class="w-full text-xs rounded-lg border border-slate-300 pl-8 pr-3 py-2 focus:ring-2 focus:ring-hospital-500 focus:outline-none">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Unit Pelayanan</label>
+                        <select id="filterUnit" onchange="applyFilters()" class="w-full text-xs rounded-lg border border-slate-300 px-3 py-2 focus:ring-2 focus:ring-hospital-500 focus:outline-none">
+                            <option value="">Semua Unit</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Status Ketercapaian</label>
+                        <select id="filterStatus" onchange="applyFilters()" class="w-full text-xs rounded-lg border border-slate-300 px-3 py-2 focus:ring-2 focus:ring-hospital-500 focus:outline-none">
+                            <option value="">Semua Status</option>
+                            <option value="ACHIEVED">Tercapai</option>
+                            <option value="NOT_ACHIEVED">Tidak Tercapai</option>
+                            <option value="VALIDATION_NEEDED">Perlu Validasi</option>
+                            <option value="INFO">Informasi Standar</option>
+                            <option value="NO_DATA">Belum Ada Data</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Kode Indikator</label>
+                        <select id="filterKode" onchange="applyFilters()" class="w-full text-xs rounded-lg border border-slate-300 px-3 py-2 focus:ring-2 focus:ring-hospital-500 focus:outline-none">
+                            <option value="">Semua Kode (K.7 - K.18)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Detail Data Table Card -->
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                <div class="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
+                    <div>
+                        <h3 class="font-bold text-slate-800 text-base">Tabel Capaian Indikator Mutu</h3>
+                        <p class="text-xs text-slate-500">Menampilkan data mutu bulanan beserta formula numerik</p>
+                    </div>
+                    <span id="rowCountBadge" class="text-xs font-semibold text-slate-500 bg-slate-100 px-2.5 py-1 rounded-full">
+                        0 Indikator
+                    </span>
+                </div>
+
+                <div class="overflow-x-auto custom-scrollbar">
+                    <table class="w-full text-left text-xs text-slate-700">
+                        <thead class="bg-slate-50 text-slate-600 uppercase font-semibold border-b border-slate-200">
+                            <tr>
+                                <th class="py-3 px-3 text-center w-12">No</th>
+                                <th class="py-3 px-3 w-36">Unit Pelayanan</th>
+                                <th class="py-3 px-2 w-16 text-center">Kode</th>
+                                <th class="py-3 px-4 min-w-[260px]">Judul Indikator Mutu</th>
+                                <th class="py-3 px-3 w-28">Standar</th>
+                                <th class="py-3 px-3 w-28 text-center">Numerator / Denominator</th>
+                                <th class="py-3 px-3 w-28 text-center">Capaian</th>
+                                <th class="py-3 px-3 w-28 text-center">Status</th>
+                                <th class="py-3 px-4 min-w-[200px]">Keterangan</th>
+                                <th class="py-3 px-3 w-16 text-center">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="dashboardTableBody" class="divide-y divide-slate-100">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+
+        <section id="view-input" class="space-y-6 hidden">
+            <!-- Locked View Banner -->
+            <div id="inputLockedBanner" class="bg-amber-50 border border-amber-200 rounded-xl p-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-amber-900">
+                <div class="flex items-center space-x-3">
+                    <span class="p-2.5 rounded-lg bg-amber-100 text-amber-700 font-bold">
+                        <i class="fa-solid fa-lock text-xl"></i>
+                    </span>
+                    <div>
+                        <h4 class="font-bold text-sm">Mode Edit Terkunci (Mode Lihat Aktif)</h4>
+                        <p class="text-xs text-amber-700">Anda dapat melihat data. Untuk mengubah atau menginput nilai indikator, silakan login sebagai petugas terlebih dahulu.</p>
+                    </div>
+                </div>
+                <button onclick="openLoginModal()" class="bg-amber-600 hover:bg-amber-700 text-white font-semibold text-xs px-4 py-2 rounded-lg transition flex items-center gap-1.5 whitespace-nowrap">
+                    <i class="fa-solid fa-key"></i> Login Buka Akses Edit
+                </button>
+            </div>
+
+            <!-- Input Form Card -->
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                <div class="p-5 border-b border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                    <div>
+                        <span class="text-xs font-bold uppercase tracking-wider text-hospital-600">Pengisian Data Bulanan</span>
+                        <h2 id="inputMonthTitle" class="text-lg font-bold text-slate-800">April 2026</h2>
+                        <p class="text-xs text-slate-500">Isi nilai Numerator & Denominator untuk otomatis mengkalkulasi persen/waktu capaian.</p>
+                    </div>
+                    <button id="saveInputBtn" onclick="saveInputForm()" class="bg-hospital-600 hover:bg-hospital-700 text-white font-bold text-xs sm:text-sm px-5 py-2.5 rounded-lg transition flex items-center gap-2 shadow-md">
+                        <i class="fa-solid fa-floppy-disk"></i>
+                        <span>Simpan Perubahan Data</span>
+                    </button>
+                </div>
+
+                <div class="overflow-x-auto custom-scrollbar">
+                    <table class="w-full text-left text-xs text-slate-700 border-collapse">
+                        <thead class="bg-slate-800 text-white font-semibold uppercase">
+                            <tr>
+                                <th class="p-3 text-center w-12 border-r border-slate-700">No</th>
+                                <th class="p-3 w-32 border-r border-slate-700">Unit</th>
+                                <th class="p-3 min-w-[240px] border-r border-slate-700">Indikator Mutu</th>
+                                <th class="p-3 w-28 text-center border-r border-slate-700">Numerator (N)</th>
+                                <th class="p-3 w-28 text-center border-r border-slate-700">Denominator (D)</th>
+                                <th class="p-3 w-28 text-center border-r border-slate-700">Capaian (Nilai)</th>
+                                <th class="p-3 w-32 text-center border-r border-slate-700">Display Capaian</th>
+                                <th class="p-3 w-28 text-center border-r border-slate-700">Status</th>
+                                <th class="p-3 min-w-[180px]">Keterangan</th>
+                            </tr>
+                        </thead>
+                        <tbody id="inputFormTableBody" class="divide-y divide-slate-200">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+
+        <section id="view-trend" class="space-y-6 hidden">
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-200 gap-3">
+                    <div>
+                        <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                            <i class="fa-solid fa-chart-line text-hospital-500"></i>
+                            Analisis Tren Ketercapaian Mutu (Jan – Des 2026)
+                        </h2>
+                        <p class="text-xs text-slate-500">Pilih indikator untuk memantau grafik perjalanan capaian sepanjang 12 bulan.</p>
+                    </div>
+
+                    <div class="w-full sm:w-80">
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Pilih Indikator Mutu:</label>
+                        <select id="trendIndicatorSelect" onchange="renderTrendChart()" class="w-full text-xs rounded-lg border border-slate-300 px-3 py-2 focus:ring-2 focus:ring-hospital-500 focus:outline-none font-medium">
+                            <!-- Populated dynamically -->
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Indicator Meta Info Badge -->
+                <div id="trendIndicatorMeta" class="mt-4 bg-hospital-50 border border-hospital-200 rounded-lg p-3 text-xs flex flex-wrap gap-4 items-center justify-between text-hospital-900">
+                    <!-- Populated dynamically -->
+                </div>
+
+                <!-- Line Chart Container -->
+                <div class="mt-6 h-80">
+                    <canvas id="lineTrendChart"></canvas>
+                </div>
+
+                <!-- 12 Month Table Summary -->
+                <div class="mt-6 overflow-x-auto custom-scrollbar">
+                    <h3 class="font-bold text-sm text-slate-800 mb-2">Ringkasan Data Monthly 2026</h3>
+                    <table class="w-full text-xs text-center border-collapse border border-slate-200">
+                        <thead class="bg-slate-100 text-slate-700 font-bold">
+                            <tr>
+                                <th class="p-2 border border-slate-200">Metrik</th>
+                                <th class="p-2 border border-slate-200">Jan</th>
+                                <th class="p-2 border border-slate-200">Feb</th>
+                                <th class="p-2 border border-slate-200">Mar</th>
+                                <th class="p-2 border border-slate-200">Apr</th>
+                                <th class="p-2 border border-slate-200">Mei</th>
+                                <th class="p-2 border border-slate-200">Jun</th>
+                                <th class="p-2 border border-slate-200">Jul</th>
+                                <th class="p-2 border border-slate-200">Agu</th>
+                                <th class="p-2 border border-slate-200">Sep</th>
+                                <th class="p-2 border border-slate-200">Okt</th>
+                                <th class="p-2 border border-slate-200">Nov</th>
+                                <th class="p-2 border border-slate-200">Des</th>
+                            </tr>
+                        </thead>
+                        <tbody id="trendMonthlyTableBody">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+
+        <section id="view-rekap" class="space-y-6 hidden">
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
+                <div class="flex flex-col md:flex-row md:items-center justify-between pb-4 border-b border-slate-200 gap-3">
+                    <div>
+                        <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                            <i class="fa-solid fa-table-cells text-hospital-500"></i>
+                            Matrix Heatmap Kepatuhan Unit (2026)
+                        </h2>
+                        <p class="text-xs text-slate-500">Persentase kepatuhan indikator mutu per unit pelayanan penunjang sepanjang tahun 2026.</p>
+                    </div>
+
+                    <!-- Heatmap View Mode Selector -->
+                    <div class="flex items-center gap-2">
+                        <div class="bg-slate-100 p-1 rounded-lg border border-slate-200 flex text-xs font-semibold">
+                            <button id="heatmapModeMonthlyBtn" onclick="toggleHeatmapMode('monthly')" class="px-3 py-1.5 rounded-md bg-white text-hospital-700 shadow-sm transition">
+                                Mode Bulanan (12 Bulan)
+                            </button>
+                            <button id="heatmapModeQuarterlyBtn" onclick="toggleHeatmapMode('quarterly')" class="px-3 py-1.5 rounded-md text-slate-600 hover:text-slate-900 transition">
+                                Mode Triwulan & Tahunan
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Legend -->
+                <div class="flex flex-wrap items-center gap-2 text-xs mt-3">
+                    <span class="flex items-center gap-1.5 px-2 py-1 rounded bg-emerald-100 text-emerald-800 font-medium">
+                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-600"></span> 100% Sempurna
+                    </span>
+                    <span class="flex items-center gap-1.5 px-2 py-1 rounded bg-emerald-50 text-emerald-700 font-medium border border-emerald-200">
+                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span> ≥ 80% Baik
+                    </span>
+                    <span class="flex items-center gap-1.5 px-2 py-1 rounded bg-amber-100 text-amber-800 font-medium">
+                        <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span> 50-79% Perlu Perhatian
+                    </span>
+                    <span class="flex items-center gap-1.5 px-2 py-1 rounded bg-rose-100 text-rose-800 font-medium">
+                        <span class="w-2.5 h-2.5 rounded-full bg-rose-600"></span> &lt; 50% Kurang
+                    </span>
+                    <span class="flex items-center gap-1.5 px-2 py-1 rounded bg-slate-100 text-slate-600 font-medium">
+                        <span class="w-2.5 h-2.5 rounded-full bg-slate-400"></span> Belum Ada Data
+                    </span>
+                </div>
+
+                <!-- Matrix Table Container -->
+                <div class="mt-4 overflow-x-auto custom-scrollbar">
+                    <table class="w-full text-xs text-center border-collapse border border-slate-200">
+                        <thead id="rekapHeatmapTableHead" class="bg-slate-800 text-white font-bold uppercase tracking-wider">
+                            <!-- Populated dynamically -->
+                        </thead>
+                        <tbody id="rekapHeatmapTableBody">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Unit Performance Cards -->
+                <div class="mt-8">
+                    <h3 class="font-bold text-slate-800 text-base mb-3 flex items-center gap-2">
+                        <i class="fa-solid fa-list-check text-hospital-500"></i>
+                        Ringkasan Performa Per Unit (<span id="rekapActivePeriodTitle">Bulan Terpilih</span>)
+                    </h3>
+                    <div id="unitPerformanceCardsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Custom Toast Notification -->
+    <div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 ease-in-out bg-slate-900 text-white px-4 py-3 rounded-xl shadow-2xl border border-slate-700 flex items-center gap-3 pointer-events-none">
+        <i id="toastIcon" class="fa-solid fa-circle-check text-emerald-400 text-lg"></i>
+        <span id="toastMessage" class="text-xs sm:text-sm font-medium">Pesan notifikasi</span>
+    </div>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 max-w-sm w-full overflow-hidden transform transition-all">
+            <div class="bg-hospital-900 text-white px-6 py-4 flex items-center justify-between">
+                <h3 class="font-bold text-base flex items-center gap-2">
+                    <i class="fa-solid fa-user-shield text-amber-400"></i>
+                    Login Petugas Mutu
+                </h3>
+                <button onclick="closeLoginModal()" class="text-white/70 hover:text-white text-lg">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <form onsubmit="handleLoginSubmit(event)" class="p-6 space-y-4 text-xs">
+                <p class="text-slate-600">Masukkan kata sandi petugas untuk membuka hak akses penginputan dan perubahan data indikator mutu.</p>
+                
+                <div>
+                    <label class="block font-semibold text-slate-700 mb-1">Kata Sandi / Password</label>
+                    <div class="relative">
+                        <input type="password" id="loginPasswordInput" placeholder="Masukkan password..." required class="w-full text-xs rounded-lg border border-slate-300 pl-3 pr-10 py-2.5 focus:ring-2 focus:ring-hospital-500 focus:outline-none">
+                        <button type="button" onclick="togglePasswordVisibility()" class="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600">
+                            <i id="eyeIcon" class="fa-solid fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="pt-2 flex justify-end gap-2">
+                    <button type="button" onclick="closeLoginModal()" class="px-4 py-2 rounded-lg text-slate-600 hover:bg-slate-100 font-semibold">Batal</button>
+                    <button type="submit" class="px-4 py-2 rounded-lg bg-hospital-600 hover:bg-hospital-700 text-white font-bold flex items-center gap-1.5 shadow">
+                        <i class="fa-solid fa-lock-open"></i> Masuk Mode Edit
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Quick Edit Modal -->
+    <div id="editModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 max-w-lg w-full overflow-hidden transform transition-all">
+            <div class="bg-hospital-900 text-white px-6 py-4 flex items-center justify-between">
+                <h3 class="font-bold text-base flex items-center gap-2">
+                    <i class="fa-solid fa-pen-to-square"></i>
+                    Edit Data Indikator
+                </h3>
+                <button onclick="closeEditModal()" class="text-white/70 hover:text-white text-lg">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="p-6 space-y-4 text-xs">
+                <div>
+                    <span id="modalIndicatorUnit" class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-hospital-100 text-hospital-800">UTD</span>
+                    <h4 id="modalIndicatorTitle" class="text-sm font-bold text-slate-800 mt-1">Judul Indikator</h4>
+                    <p id="modalIndicatorStandard" class="text-slate-500 mt-0.5">Standar: 100%</p>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-semibold text-slate-700 mb-1">Numerator (N)</label>
+                        <input type="number" step="any" id="modalNumerator" oninput="calculateModalCapaian()" class="w-full text-xs rounded-lg border border-slate-300 px-3 py-2 focus:ring-2 focus:ring-hospital-500">
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-slate-700 mb-1">Denominator (D)</label>
+                        <input type="number" step="any" id="modalDenominator" oninput="calculateModalCapaian()" class="w-full text-xs rounded-lg border border-slate-300 px-3 py-2 focus:ring-2 focus:ring-hospital-500">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-semibold text-slate-700 mb-1">Capaian Angka (Nilai)</label>
+                        <input type="number" step="any" id="modalCapaianNilai" class="w-full text-xs rounded-lg border border-slate-300 px-3 py-2 focus:ring-2 focus:ring-hospital-500">
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-slate-700 mb-1">Capaian Display</label>
+                        <input type="text" id="modalCapaianDisplay" placeholder="cth: 100% atau 30 menit" class="w-full text-xs rounded-lg border border-slate-300 px-3 py-2 focus:ring-2 focus:ring-hospital-500">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block font-semibold text-slate-700 mb-1">Keterangan / Catatan</label>
+                    <textarea id="modalKeterangan" rows="2" class="w-full text-xs rounded-lg border border-slate-300 px-3 py-2 focus:ring-2 focus:ring-hospital-500" placeholder="Catatan khusus jika ada..."></textarea>
+                </div>
+            </div>
+
+            <div class="bg-slate-50 px-6 py-3 border-t border-slate-200 flex justify-end gap-2">
+                <button onclick="closeEditModal()" class="px-4 py-2 rounded-lg text-slate-600 hover:bg-slate-200 font-medium text-xs">Batal</button>
+                <button onclick="saveEditModalData()" class="px-4 py-2 rounded-lg bg-hospital-600 hover:bg-hospital-700 text-white font-semibold text-xs flex items-center gap-1.5">
+                    <i class="fa-solid fa-floppy-disk"></i> Simpan
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirm Modal -->
+    <div id="confirmModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 max-w-md w-full p-6 space-y-4">
+            <div class="flex items-center space-x-3 text-rose-600">
+                <i class="fa-solid fa-triangle-exclamation text-2xl"></i>
+                <h3 id="confirmModalTitle" class="font-bold text-slate-800 text-base">Konfirmasi Tindakan</h3>
+            </div>
+            <p id="confirmModalMessage" class="text-xs text-slate-600">Apakah Anda yakin ingin melakukan tindakan ini?</p>
+            <div class="flex justify-end gap-2 pt-2">
+                <button onclick="closeConfirmModal(false)" class="px-4 py-2 rounded-lg text-slate-600 hover:bg-slate-100 text-xs font-semibold">Batal</button>
+                <button id="confirmModalActionBtn" onclick="closeConfirmModal(true)" class="px-4 py-2 rounded-lg bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold">Lanjutkan</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const MASTER_INDICATORS = [
+            { "id": 1, "unit": "UTD", "kode": "K.7", "indikator": "Kebutuhan darah bagi setiap pelayanan transfusi", "standar": "100%", "operator": ">=", "target": 100, "satuan": "%" },
+            { "id": 2, "unit": "UTD", "kode": "K.7", "indikator": "Kejadian reaksi transfusi", "standar": "≤ 0,01%", "operator": "<=", "target": 0.01, "satuan": "%" },
+            { "id": 3, "unit": "Pelayanan Gakin", "kode": "K.8", "indikator": "Pelayanan terhadap pasien GAKIN yang datang ke rumah sakit setiap unit pelayanan", "standar": "100%", "operator": ">=", "target": 100, "satuan": "%" },
+            { "id": 4, "unit": "Pemulasaran Jenazah", "kode": "K.9", "indikator": "Waktu tanggap pelayanan pemulasaran jenazah", "standar": "≤ 2 jam", "operator": "<=", "target": 120, "satuan": "menit" },
+            { "id": 5, "unit": "Instalasi Gizi", "kode": "K.10", "indikator": "Ketepatan waktu pemberian makanan kepada pasien", "standar": "≥ 90%", "operator": ">=", "target": 90, "satuan": "%" },
+            { "id": 6, "unit": "Instalasi Gizi", "kode": "K.10", "indikator": "Sisa makanan yang tidak termakan oleh pasien", "standar": "≤ 20%", "operator": "<=", "target": 20, "satuan": "%" },
+            { "id": 7, "unit": "Instalasi Gizi", "kode": "K.10", "indikator": "Tidak adanya kejadian kesalahan pemberian diet", "standar": "100%", "operator": ">=", "target": 100, "satuan": "%" },
+            { "id": 8, "unit": "Instalasi Radiologi", "kode": "K.11", "indikator": "Waktu tunggu hasil pelayanan Thorax foto", "standar": "≤ 3 jam", "operator": "<=", "target": 180, "satuan": "menit" },
+            { "id": 9, "unit": "Instalasi Radiologi", "kode": "K.11", "indikator": "Pelaksanaan ekspertisi dr Sp. Rad", "standar": null, "operator": null, "target": null, "satuan": "%" },
+            { "id": 10, "unit": "Instalasi Radiologi", "kode": "K.11", "indikator": "Kejadian kegagalan pelayanan rontgen (kerusakan foto)", "standar": "≤ 2%", "operator": "<=", "target": 2, "satuan": "%" },
+            { "id": 11, "unit": "Instalasi Radiologi", "kode": "K.11", "indikator": "Kepuasan pelanggan", "standar": "≥ 80%", "operator": ">=", "target": 80, "satuan": "%" },
+            { "id": 12, "unit": "Instalasi Laboratorium Patologi Klinik", "kode": "K.12", "indikator": "Waktu tunggu hasil pelayanan laboratorium", "standar": "≤ 140 menit kimia darah & rutin", "operator": "<=", "target": 140, "satuan": "menit" },
+            { "id": 13, "unit": "Instalasi Laboratorium Patologi Klinik", "kode": "K.12", "indikator": "Pelaksana ekspertisi Dokter Sp. PK", "standar": null, "operator": null, "target": null, "satuan": "%" },
+            { "id": 14, "unit": "Instalasi Laboratorium Patologi Klinik", "kode": "K.12", "indikator": "Tidak adanya kesalahan pemberian hasil pemeriksaan laboratorium", "standar": "100%", "operator": ">=", "target": 100, "satuan": "%" },
+            { "id": 15, "unit": "Instalasi Laboratorium Patologi Klinik", "kode": "K.12", "indikator": "Kepuasan pelanggan", "standar": "≥ 80%", "operator": ">=", "target": 80, "satuan": "%" },
+            { "id": 16, "unit": "Instalasi Rehabilitasi Medik", "kode": "K.13", "indikator": "Kejadian Drop Out pasien terhadap pelayanan rehabilitasi medik yang direncanakan", "standar": "≤ 50%", "operator": "<=", "target": 50, "satuan": "%" },
+            { "id": 17, "unit": "Instalasi Rehabilitasi Medik", "kode": "K.13", "indikator": "Tidak adanya kejadian kesalahan tindakan rehab medik", "standar": "100%", "operator": ">=", "target": 100, "satuan": "%" },
+            { "id": 18, "unit": "Instalasi Rehabilitasi Medik", "kode": "K.13", "indikator": "Kepuasan pelanggan", "standar": "≥ 80%", "operator": ">=", "target": 80, "satuan": "%" },
+            { "id": 19, "unit": "Instalasi Farmasi", "kode": "K.14", "indikator": "Waktu tunggu pelayanan obat jadi", "standar": "≤ 30 menit", "operator": "<=", "target": 30, "satuan": "menit" },
+            { "id": 20, "unit": "Instalasi Farmasi", "kode": "K.14", "indikator": "Waktu tunggu pelayanan obat racian", "standar": "≤ 60 menit", "operator": "<=", "target": 60, "satuan": "menit" },
+            { "id": 21, "unit": "Instalasi Farmasi", "kode": "K.14", "indikator": "Tidak adanya kesalahan pemberian obat", "standar": "100%", "operator": ">=", "target": 100, "satuan": "%" },
+            { "id": 22, "unit": "Instalasi Farmasi", "kode": "K.14", "indikator": "Kepuasan pelanggan", "standar": "≥ 80%", "operator": ">=", "target": 80, "satuan": "%" },
+            { "id": 23, "unit": "Instalasi Farmasi", "kode": "K.14", "indikator": "Penulisan resep sesuai formularium", "standar": "100%", "operator": ">=", "target": 100, "satuan": "%" },
+            { "id": 24, "unit": "Pengolahan Limbah", "kode": "K.15", "indikator": "Baku mutu limbah cair: BOD5 < 50 mg/l; COD < 80 mg/l; TSS < 30 mg/l; PH 6-9", "standar": "BOD5 < 50 mg/l; COD < 80 mg/l; TSS < 30 mg/l; PH 6-9", "operator": null, "target": null, "satuan": "" },
+            { "id": 25, "unit": "Pengolahan Limbah", "kode": "K.15", "indikator": "Pengelolaan limbah padat infeksius sesuai dengan aturan", "standar": "100%", "operator": ">=", "target": 100, "satuan": "%" },
+            { "id": 26, "unit": "Ambulance/Kereta Jenazah", "kode": "K.16", "indikator": "Waktu pelayanan ambulance/kereta jenazah", "standar": "24 jam", "operator": "=", "target": 24, "satuan": "jam" },
+            { "id": 27, "unit": "Ambulance/Kereta Jenazah", "kode": "K.16", "indikator": "Kecepatan memberikan pelayanan ambulance/kereta jenazah di rumah sakit", "standar": "30 menit", "operator": "<=", "target": 30, "satuan": "menit" },
+            { "id": 28, "unit": "Instalasi Pemeliharaan Sarana dan Prasarana Rumah Sakit", "kode": "K.17", "indikator": "Kecepatan waktu menanggapi kerusakan alat", "standar": "≥ 80%", "operator": ">=", "target": 80, "satuan": "%" },
+            { "id": 29, "unit": "Instalasi Pemeliharaan Sarana dan Prasarana Rumah Sakit", "kode": "K.17", "indikator": "Ketepatan waktu pemeliharaan alat", "standar": "100%", "operator": ">=", "target": 100, "satuan": "%" },
+            { "id": 30, "unit": "Instalasi Pemeliharaan Sarana dan Prasarana Rumah Sakit", "kode": "K.17", "indikator": "Peralatan laboratorium dan alat ukur yang digunakan dalam pelayanan terkalibrasi tepat waktu sesuai ketentuan kalibrasi", "standar": "100%", "operator": ">=", "target": 100, "satuan": "%" },
+            { "id": 31, "unit": "Laundry", "kode": "K.18", "indikator": "Tidak adanya kejadian linen yang hilang", "standar": "100%", "operator": ">=", "target": 100, "satuan": "%" },
+            { "id": 32, "unit": "Laundry", "kode": "K.18", "indikator": "Kecepatan waktu penyediaan linen untuk ruang rawat inap", "standar": "100%", "operator": ">=", "target": 100, "satuan": "%" }
+        ];
+
+        const DEFAULT_APRIL_DATA = {
+            "1": { "numerator": 263, "denominator": 263, "capaian_nilai": 100, "capaian_display": "100%", "keterangan": "" },
+            "2": { "numerator": 1, "denominator": 108, "capaian_nilai": 0.01, "capaian_display": "0,01%", "keterangan": "Perlu validasi: 1/108 = 0,93%" },
+            "3": { "numerator": 16, "denominator": 16, "capaian_nilai": 100, "capaian_display": "100%", "keterangan": "" },
+            "4": { "numerator": null, "denominator": null, "capaian_nilai": 43, "capaian_display": "00:43 menit", "keterangan": "" },
+            "5": { "numerator": 705, "denominator": 705, "capaian_nilai": 100, "capaian_display": "100%", "keterangan": "" },
+            "6": { "numerator": 74, "denominator": 705, "capaian_nilai": 10, "capaian_display": "10%", "keterangan": "" },
+            "7": { "numerator": 705, "denominator": 705, "capaian_nilai": 100, "capaian_display": "100%", "keterangan": "" },
+            "8": { "numerator": 6301, "denominator": 217, "capaian_nilai": 29.03, "capaian_display": "29,03 menit", "keterangan": "" },
+            "9": { "numerator": 1207, "denominator": 1207, "capaian_nilai": 100, "capaian_display": "100%", "keterangan": "" },
+            "10": { "numerator": 3, "denominator": 1207, "capaian_nilai": 0.25, "capaian_display": "0,25%", "keterangan": "" },
+            "11": { "numerator": null, "denominator": null, "capaian_nilai": null, "capaian_display": "-", "keterangan": "Belum ada data" },
+            "12": { "numerator": 70818, "denominator": 2009, "capaian_nilai": 35, "capaian_display": "35 menit", "keterangan": "" },
+            "13": { "numerator": 2009, "denominator": 2009, "capaian_nilai": 100, "capaian_display": "100%", "keterangan": "" },
+            "14": { "numerator": 2009, "denominator": 2009, "capaian_nilai": 100, "capaian_display": "100%", "keterangan": "" },
+            "15": { "numerator": 9, "denominator": 9, "capaian_nilai": 100, "capaian_display": "100%", "keterangan": "" },
+            "16": { "numerator": 0, "denominator": 1973, "capaian_nilai": 0, "capaian_display": "0%", "keterangan": "" },
+            "17": { "numerator": 649, "denominator": 649, "capaian_nilai": 100, "capaian_display": "100%", "keterangan": "" },
+            "18": { "numerator": 125, "denominator": 125, "capaian_nilai": 100, "capaian_display": "100%", "keterangan": "" },
+            "19": { "numerator": 55886, "denominator": 2554, "capaian_nilai": 21.88, "capaian_display": "21,88 menit", "keterangan": "" },
+            "20": { "numerator": 34396, "denominator": 640, "capaian_nilai": 53.74, "capaian_display": "53,74 menit", "keterangan": "" },
+            "21": { "numerator": 7709, "denominator": 7709, "capaian_nilai": 100, "capaian_display": "100%", "keterangan": "" },
+            "22": { "numerator": null, "denominator": null, "capaian_nilai": null, "capaian_display": "-", "keterangan": "Belum ada data" },
+            "23": { "numerator": 65381, "denominator": 65381, "capaian_nilai": 100, "capaian_display": "100%", "keterangan": "" },
+            "24": { "numerator": null, "denominator": null, "capaian_nilai": null, "capaian_display": "-", "keterangan": "Belum ada data" },
+            "25": { "numerator": 3630, "denominator": 4427, "capaian_nilai": 82, "capaian_display": "82%", "keterangan": "Pengolahan limbah padat dilaksanakan 1x tanggal 24 April 2026. Terdapat sisa limbah 797 kg." },
+            "26": { "numerator": null, "denominator": null, "capaian_nilai": 24, "capaian_display": "24 jam", "keterangan": "" },
+            "27": { "numerator": null, "denominator": null, "capaian_nilai": null, "capaian_display": "-", "keterangan": "Belum ada data" },
+            "28": { "numerator": 61, "denominator": 61, "capaian_nilai": 100, "capaian_display": "100%", "keterangan": "" },
+            "29": { "numerator": 39, "denominator": 39, "capaian_nilai": 100, "capaian_display": "100%", "keterangan": "" },
+            "30": { "numerator": null, "denominator": null, "capaian_nilai": null, "capaian_display": "-", "keterangan": "Belum ada data" },
+            "31": { "numerator": 1374, "denominator": 1374, "capaian_nilai": 100, "capaian_display": "100%", "keterangan": "" },
+            "32": { "numerator": 9742, "denominator": 9742, "capaian_nilai": 100, "capaian_display": "100%", "keterangan": "" }
+        };
+
+        const MONTH_NAMES = {
+            "2026-YEAR": "Tahun 2026 (Januari–Desember)",
+            "2026-TW1": "Triwulan 1 2026 (Jan–Mar)",
+            "2026-TW2": "Triwulan 2 2026 (Apr–Jun)",
+            "2026-TW3": "Triwulan 3 2026 (Jul–Sep)",
+            "2026-TW4": "Triwulan 4 2026 (Okt–Des)",
+            "2026-01": "Januari 2026", "2026-02": "Februari 2026", "2026-03": "Maret 2026",
+            "2026-04": "April 2026", "2026-05": "Mei 2026", "2026-06": "Juni 2026",
+            "2026-07": "Juli 2026", "2026-08": "Agustus 2026", "2026-09": "September 2026",
+            "2026-10": "Oktober 2026", "2026-11": "November 2026", "2026-12": "Desember 2026"
+        };
+
+        let appState = {
+            master: MASTER_INDICATORS,
+            monthlyData: {
+                "2026-01": {}, "2026-02": {}, "2026-03": {},
+                "2026-04": JSON.parse(JSON.stringify(DEFAULT_APRIL_DATA)),
+                "2026-05": {}, "2026-06": {}, "2026-07": {}, "2026-08": {},
+                "2026-09": {}, "2026-10": {}, "2026-11": {}, "2026-12": {}
+            }
+        };
+
+        let currentSelectedMonth = "2026-04";
+        let heatmapDisplayMode = "monthly";
+        let editingIndicatorId = null;
+        let isAuthenticated = false;
+        const MASTER_PASSWORD = "admin2026";
+        let confirmActionCallback = null;
+
+        let donutChartInstance = null;
+        let barChartInstance = null;
+        let lineChartInstance = null;
+
+        function loadStorageState() {
+            try {
+                const stored = localStorage.getItem('dashboardMutu2026');
+                if (stored) {
+                    const parsed = JSON.parse(stored);
+                    if (parsed && parsed.monthlyData) {
+                        appState.monthlyData = parsed.monthlyData;
+                    }
+                }
+            } catch (e) {
+                console.warn("Gagal membaca localStorage:", e);
+            }
+        }
+
+        function saveStorageState() {
+            try {
+                localStorage.setItem('dashboardMutu2026', JSON.stringify(appState));
+            } catch (e) {
+                console.warn("Gagal menyimpan localStorage:", e);
+            }
+        }
+
+        function getPeriodData(periodKey) {
+            if (!periodKey) periodKey = currentSelectedMonth;
+            
+            if (!periodKey.includes('TW') && periodKey !== '2026-YEAR') {
+                return appState.monthlyData[periodKey] || {};
+            }
+
+            let targetMonths = [];
+            if (periodKey === '2026-TW1') targetMonths = ['2026-01', '2026-02', '2026-03'];
+            else if (periodKey === '2026-TW2') targetMonths = ['2026-04', '2026-05', '2026-06'];
+            else if (periodKey === '2026-TW3') targetMonths = ['2026-07', '2026-08', '2026-09'];
+            else if (periodKey === '2026-TW4') targetMonths = ['2026-10', '2026-11', '2026-12'];
+            else if (periodKey === '2026-YEAR') {
+                targetMonths = ['2026-01', '2026-02', '2026-03', '2026-04', '2026-05', '2026-06', '2026-07', '2026-08', '2026-09', '2026-10', '2026-11', '2026-12'];
+            }
+
+            const aggregated = {};
+
+            appState.master.forEach(ind => {
+                let sumNum = 0;
+                let sumDen = 0;
+                let hasND = false;
+                let valList = [];
+                let ketList = [];
+
+                targetMonths.forEach(m => {
+                    const mData = (appState.monthlyData[m] || {})[ind.id];
+                    if (mData) {
+                        if (mData.numerator !== null && mData.numerator !== undefined && mData.denominator !== null && mData.denominator !== undefined) {
+                            sumNum += parseFloat(mData.numerator) || 0;
+                            sumDen += parseFloat(mData.denominator) || 0;
+                            hasND = true;
+                        }
+                        if (mData.capaian_nilai !== null && mData.capaian_nilai !== undefined) {
+                            valList.push(parseFloat(mData.capaian_nilai));
+                        }
+                        if (mData.keterangan && mData.keterangan.trim() !== '') {
+                            const monthShortName = MONTH_NAMES[m] ? MONTH_NAMES[m].split(' ')[0] : m;
+                            ketList.push(`[${monthShortName}]: ${mData.keterangan}`);
+                        }
+                    }
+                });
+
+                if (valList.length === 0 && !hasND) {
+                    aggregated[ind.id] = { numerator: null, denominator: null, capaian_nilai: null, capaian_display: '-', keterangan: 'Belum ada data' };
+                    return;
+                }
+
+                let calcValue = null;
+                let calcDisplay = '-';
+
+                if (hasND && sumDen > 0) {
+                    if (ind.satuan === '%') {
+                        calcValue = Math.round(((sumNum / sumDen) * 100) * 100) / 100;
+                        calcDisplay = `${calcValue}%`;
+                    } else if (ind.satuan === 'menit') {
+                        calcValue = Math.round((sumNum / sumDen) * 100) / 100;
+                        calcDisplay = `${calcValue} menit`;
+                    } else {
+                        calcValue = Math.round((sumNum / sumDen) * 100) / 100;
+                        calcDisplay = `${calcValue} ${ind.satuan || ''}`.trim();
+                    }
+                } else if (valList.length > 0) {
+                    const avg = valList.reduce((a, b) => a + b, 0) / valList.length;
+                    calcValue = Math.round(avg * 100) / 100;
+                    calcDisplay = ind.satuan === '%' ? `${calcValue}%` : (ind.satuan === 'menit' ? `${calcValue} menit` : `${calcValue} ${ind.satuan || ''}`.trim());
+                }
+
+                aggregated[ind.id] = {
+                    numerator: hasND ? sumNum : null,
+                    denominator: hasND ? sumDen : null,
+                    capaian_nilai: calcValue,
+                    capaian_display: calcDisplay,
+                    keterangan: ketList.join('; ')
+                };
+            });
+
+            return aggregated;
+        }
+
+        function evaluateStatus(ind, data) {
+            if (!data || data.capaian_nilai === null || data.capaian_nilai === undefined || data.capaian_display === '-') {
+                return { code: 'NO_DATA', label: 'Belum Ada Data', bg: 'bg-slate-100 text-slate-600 border border-slate-300' };
+            }
+            if (data.keterangan && data.keterangan.toLowerCase().includes('perlu validasi')) {
+                return { code: 'VALIDATION_NEEDED', label: 'Perlu Validasi', bg: 'bg-amber-100 text-amber-800 border border-amber-300 font-medium' };
+            }
+            if (!ind.operator || ind.target === null || ind.target === undefined) {
+                return { code: 'INFO', label: 'Informasi', bg: 'bg-sky-100 text-sky-800 border border-sky-300 font-medium' };
+            }
+
+            const val = parseFloat(data.capaian_nilai);
+            let isAchieved = false;
+
+            if (ind.operator === '>=') isAchieved = val >= ind.target;
+            else if (ind.operator === '<=') isAchieved = val <= ind.target;
+            else if (ind.operator === '=') isAchieved = val === ind.target;
+
+            if (isAchieved) {
+                return { code: 'ACHIEVED', label: 'Tercapai', bg: 'bg-emerald-100 text-emerald-800 border border-emerald-300 font-bold' };
+            } else {
+                return { code: 'NOT_ACHIEVED', label: 'Tidak Tercapai', bg: 'bg-rose-100 text-rose-800 border border-rose-300 font-bold' };
+            }
+        }
+
+        function switchTab(tabName) {
+            ['dashboard', 'input', 'trend', 'rekap'].forEach(t => {
+                const el = document.getElementById(`view-${t}`);
+                const btn = document.getElementById(`tab-btn-${t}`);
+                if (el) el.classList.add('hidden');
+                if (btn) {
+                    btn.classList.remove('active', 'bg-white/10', 'text-white', 'font-semibold');
+                    btn.classList.add('text-white/70', 'font-medium');
+                }
+            });
+
+            const targetView = document.getElementById(`view-${tabName}`);
+            const targetBtn = document.getElementById(`tab-btn-${tabName}`);
+            if (targetView) targetView.classList.remove('hidden');
+            if (targetBtn) {
+                targetBtn.classList.add('active', 'bg-white/10', 'text-white', 'font-semibold');
+                targetBtn.classList.remove('text-white/70', 'font-medium');
+            }
+
+            if (tabName === 'dashboard') renderDashboard();
+            else if (tabName === 'input') loadInputFormData(currentSelectedMonth);
+            else if (tabName === 'trend') renderTrendChart();
+            else if (tabName === 'rekap') renderRekapMatrix();
+        }
+
+        function handleMonthChange(monthKey) {
+            currentSelectedMonth = monthKey;
+            document.getElementById('currentSelectedMonthTitle').innerText = MONTH_NAMES[monthKey] || monthKey;
+            
+            const activeTabBtn = document.querySelector('.tab-btn.active');
+            if (activeTabBtn) {
+                const id = activeTabBtn.id.replace('tab-btn-', '');
+                switchTab(id);
+            } else {
+                renderDashboard();
+            }
+        }
+
+        function toggleAuthAction() {
+            if (isAuthenticated) {
+                isAuthenticated = false;
+                updateAuthUI();
+                showToast("Anda telah keluar dari Mode Edit Petugas", "info");
+            } else {
+                openLoginModal();
+            }
+        }
+
+        function updateAuthUI() {
+            const dot = document.getElementById('authStatusDot');
+            const text = document.getElementById('authStatusText');
+            const actionLabel = document.getElementById('authActionLabel');
+            const actionIcon = document.getElementById('authActionIcon');
+            const actionBtn = document.getElementById('authActionBtn');
+            const lockedBanner = document.getElementById('inputLockedBanner');
+            const inputLockBadge = document.getElementById('inputLockBadge');
+            const navInputLockIcon = document.getElementById('navInputLockIcon');
+            const saveInputBtn = document.getElementById('saveInputBtn');
+            const importLabelBtn = document.getElementById('importLabelBtn');
+            const importFileInput = document.getElementById('importFileInput');
+            const resetDataBtn = document.getElementById('resetDataBtn');
+
+            if (isAuthenticated) {
+                if (dot) dot.className = "w-2 h-2 rounded-full bg-emerald-400 animate-pulse";
+                if (text) { text.innerText = "Mode Petugas (Edit)"; text.className = "font-bold text-emerald-200"; }
+                if (actionLabel) actionLabel.innerText = "Logout";
+                if (actionIcon) actionIcon.className = "fa-solid fa-lock-open";
+                if (actionBtn) actionBtn.className = "bg-rose-500 hover:bg-rose-600 text-white font-bold text-xs sm:text-sm px-3 py-2 rounded-lg transition flex items-center gap-1.5 shadow-sm";
+                if (lockedBanner) lockedBanner.classList.add('hidden');
+                if (inputLockBadge) inputLockBadge.classList.add('hidden');
+                if (navInputLockIcon) navInputLockIcon.classList.add('hidden');
+                if (saveInputBtn) saveInputBtn.disabled = false;
+                if (importLabelBtn) { importLabelBtn.classList.remove('opacity-60', 'cursor-not-allowed'); importLabelBtn.classList.add('hover:bg-white/20', 'cursor-pointer'); }
+                if (importFileInput) importFileInput.disabled = false;
+                if (resetDataBtn) { resetDataBtn.classList.remove('bg-rose-600/50', 'cursor-not-allowed'); resetDataBtn.classList.add('bg-rose-600', 'hover:bg-rose-700', 'cursor-pointer'); }
+            } else {
+                if (dot) dot.className = "w-2 h-2 rounded-full bg-amber-400 animate-pulse";
+                if (text) { text.innerText = "Mode Lihat"; text.className = "font-medium text-amber-200"; }
+                if (actionLabel) actionLabel.innerText = "Login Petugas";
+                if (actionIcon) actionIcon.className = "fa-solid fa-lock";
+                if (actionBtn) actionBtn.className = "bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold text-xs sm:text-sm px-3 py-2 rounded-lg transition flex items-center gap-1.5 shadow-sm";
+                if (lockedBanner) lockedBanner.classList.remove('hidden');
+                if (inputLockBadge) inputLockBadge.classList.remove('hidden');
+                if (navInputLockIcon) navInputLockIcon.classList.remove('hidden');
+                if (saveInputBtn) saveInputBtn.disabled = true;
+                if (importLabelBtn) { importLabelBtn.classList.add('opacity-60', 'cursor-not-allowed'); importLabelBtn.classList.remove('hover:bg-white/20', 'cursor-pointer'); }
+                if (importFileInput) importFileInput.disabled = true;
+                if (resetDataBtn) { resetDataBtn.classList.add('bg-rose-600/50', 'cursor-not-allowed'); resetDataBtn.classList.remove('bg-rose-600', 'hover:bg-rose-700', 'cursor-pointer'); }
+            }
+
+            const activeTabBtn = document.querySelector('.tab-btn.active');
+            if (activeTabBtn) {
+                const id = activeTabBtn.id.replace('tab-btn-', '');
+                if (id === 'dashboard') applyFilters();
+                else if (id === 'input') loadInputFormData(currentSelectedMonth);
+            }
+        }
+
+        function openLoginModal() {
+            document.getElementById('loginModal').classList.remove('hidden');
+            document.getElementById('loginPasswordInput').value = '';
+            document.getElementById('loginPasswordInput').focus();
+        }
+
+        function closeLoginModal() {
+            document.getElementById('loginModal').classList.add('hidden');
+        }
+
+        function handleLoginSubmit(event) {
+            event.preventDefault();
+            const password = document.getElementById('loginPasswordInput').value;
+            if (password === MASTER_PASSWORD) {
+                isAuthenticated = true;
+                closeLoginModal();
+                updateAuthUI();
+                showToast("Login Petugas berhasil! Mode edit diaktifkan.", "success");
+            } else {
+                showToast("Password salah! Silakan coba lagi.", "error");
+            }
+        }
+
+        function togglePasswordVisibility() {
+            const input = document.getElementById('loginPasswordInput');
+            const icon = document.getElementById('eyeIcon');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.className = 'fa-solid fa-eye-slash';
+            } else {
+                input.type = 'password';
+                icon.className = 'fa-solid fa-eye';
+            }
+        }
+
+        function renderDashboard() {
+            const currentMonthData = getPeriodData(currentSelectedMonth);
+            const unitsSet = new Set(appState.master.map(i => i.unit));
+            
+            let countTercapai = 0;
+            let countTidakTercapai = 0;
+            let countBelumAdaData = 0;
+            let countValidasiInfo = 0;
+
+            const unitCounts = {};
+            unitsSet.forEach(u => unitCounts[u] = { total: 0, achieved: 0 });
+
+            appState.master.forEach(ind => {
+                const data = currentMonthData[ind.id] || {};
+                const status = evaluateStatus(ind, data);
+
+                unitCounts[ind.unit].total++;
+
+                if (status.code === 'ACHIEVED') {
+                    countTercapai++;
+                    unitCounts[ind.unit].achieved++;
+                } else if (status.code === 'NOT_ACHIEVED') {
+                    countTidakTercapai++;
+                } else if (status.code === 'NO_DATA') {
+                    countBelumAdaData++;
+                } else {
+                    countValidasiInfo++;
+                }
+            });
+
+            const totalIndikator = appState.master.length;
+            const evaluatedCount = countTercapai + countTidakTercapai;
+            const compliancePercentage = evaluatedCount > 0 ? ((countTercapai / evaluatedCount) * 100).toFixed(1) : "0.0";
+
+            document.getElementById('kpi-total-unit').innerText = unitsSet.size;
+            document.getElementById('kpi-total-indikator').innerText = totalIndikator;
+            document.getElementById('kpi-tercapai').innerText = countTercapai;
+            document.getElementById('kpi-tidak-tercapai').innerText = countTidakTercapai;
+            document.getElementById('kpi-belum-ada-data').innerText = countBelumAdaData;
+            document.getElementById('kpi-validasi-info').innerText = countValidasiInfo;
+
+            const badge = document.getElementById('compliancePercentageBadge');
+            badge.innerText = `Kepatuhan Mutu Evaluasi: ${compliancePercentage}%`;
+            badge.className = `px-3 py-1 rounded-full text-xs font-bold border ${
+                parseFloat(compliancePercentage) >= 80 ? 'bg-emerald-100 text-emerald-800 border-emerald-300' : 'bg-rose-100 text-rose-800 border-rose-300'
+            }`;
+
+            renderDonutChart(countTercapai, countTidakTercapai, countBelumAdaData, countValidasiInfo);
+            renderBarChart(unitCounts);
+            applyFilters();
+        }
+
+        function applyFilters() {
+            const search = document.getElementById('filterSearch').value.toLowerCase();
+            const unit = document.getElementById('filterUnit').value;
+            const status = document.getElementById('filterStatus').value;
+            const kode = document.getElementById('filterKode').value;
+
+            const currentMonthData = getPeriodData(currentSelectedMonth);
+            const tbody = document.getElementById('dashboardTableBody');
+            tbody.innerHTML = '';
+
+            let matchedCount = 0;
+
+            appState.master.forEach((ind) => {
+                const data = currentMonthData[ind.id] || {};
+                const evalStatus = evaluateStatus(ind, data);
+
+                if (search && !ind.indikator.toLowerCase().includes(search) && !ind.unit.toLowerCase().includes(search)) return;
+                if (unit && ind.unit !== unit) return;
+                if (kode && ind.kode !== kode) return;
+                if (status && evalStatus.code !== status) return;
+
+                matchedCount++;
+
+                const numDisplay = data.numerator !== null && data.numerator !== undefined ? data.numerator : '-';
+                const denDisplay = data.denominator !== null && data.denominator !== undefined ? data.denominator : '-';
+                const ndFormatted = (numDisplay !== '-' || denDisplay !== '-') ? `${numDisplay} / ${denDisplay}` : '-';
+
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50 transition border-b border-slate-100";
+                tr.innerHTML = `
+                    <td class="py-3 px-3 text-center font-medium text-slate-500">${ind.id}</td>
+                    <td class="py-3 px-3 font-semibold text-slate-800">${ind.unit}</td>
+                    <td class="py-3 px-2 text-center font-bold text-hospital-700"><span class="bg-hospital-50 px-2 py-0.5 rounded border border-hospital-200">${ind.kode}</span></td>
+                    <td class="py-3 px-4 font-medium text-slate-800">${ind.indikator}</td>
+                    <td class="py-3 px-3 text-slate-600 font-medium">${ind.standar || '-'}</td>
+                    <td class="py-3 px-3 text-center text-slate-600">${ndFormatted}</td>
+                    <td class="py-3 px-3 text-center font-bold text-slate-800">${data.capaian_display || '-'}</td>
+                    <td class="py-3 px-3 text-center">
+                        <span class="px-2.5 py-1 rounded-full text-[11px] ${evalStatus.bg}">${evalStatus.label}</span>
+                    </td>
+                    <td class="py-3 px-4 text-slate-500 italic max-w-xs truncate" title="${data.keterangan || ''}">${data.keterangan || '-'}</td>
+                    <td class="py-3 px-3 text-center">
+                        <button onclick="openEditModal(${ind.id})" class="${isAuthenticated ? 'text-hospital-600 hover:text-hospital-900 bg-hospital-50 hover:bg-hospital-100' : 'text-slate-400 bg-slate-100 hover:bg-slate-200'} p-1.5 rounded-md transition" title="${isAuthenticated ? 'Edit Indikator' : 'Mode lihat (Klik untuk Login)'}">
+                            <i class="fa-solid ${isAuthenticated ? 'fa-pen' : 'fa-lock'}"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            document.getElementById('rowCountBadge').innerText = `${matchedCount} Indikator Ditampilkan`;
+        }
+
+        function resetFilters() {
+            document.getElementById('filterSearch').value = '';
+            document.getElementById('filterUnit').value = '';
+            document.getElementById('filterStatus').value = '';
+            document.getElementById('filterKode').value = '';
+            applyFilters();
+        }
+
+        function renderDonutChart(tercapai, tidakTercapai, belumData, validasiInfo) {
+            const ctx = document.getElementById('donutStatusChart').getContext('2d');
+            if (donutChartInstance) donutChartInstance.destroy();
+
+            donutChartInstance = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Tercapai', 'Tidak Tercapai', 'Belum Ada Data', 'Perlu Validasi / Info'],
+                    datasets: [{
+                        data: [tercapai, tidakTercapai, belumData, validasiInfo],
+                        backgroundColor: ['#10b981', '#f43f5e', '#cbd5e1', '#f59e0b'],
+                        borderWidth: 2,
+                        borderColor: '#ffffff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom', labels: { font: { family: 'Inter', size: 11 } } }
+                    },
+                    cutout: '65%'
+                }
+            });
+        }
+
+        function renderBarChart(unitCounts) {
+            const ctx = document.getElementById('barUnitChart').getContext('2d');
+            if (barChartInstance) barChartInstance.destroy();
+
+            const labels = Object.keys(unitCounts);
+            const achievedData = labels.map(u => unitCounts[u].achieved);
+            const totalData = labels.map(u => unitCounts[u].total);
+
+            barChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Tercapai',
+                            data: achievedData,
+                            backgroundColor: '#0284c7',
+                            borderRadius: 6
+                        },
+                        {
+                            label: 'Total Indikator',
+                            data: totalData,
+                            backgroundColor: '#e2e8f0',
+                            borderRadius: 6
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { beginAtZero: true, ticks: { precision: 0 } },
+                        x: { ticks: { font: { family: 'Inter', size: 10 } } }
+                    },
+                    plugins: {
+                        legend: { position: 'top', labels: { font: { family: 'Inter', size: 11 } } }
+                    }
+                }
+            });
+        }
+
+        function loadInputFormData(monthKey) {
+            if (monthKey.includes('TW') || monthKey === '2026-YEAR') {
+                showToast("Form input khusus untuk data bulanan. Mengalihkan ke bulan April 2026.", "info");
+                monthKey = "2026-04";
+                document.getElementById('globalMonthSelect').value = monthKey;
+            }
+
+            currentSelectedMonth = monthKey;
+            document.getElementById('inputMonthTitle').innerText = MONTH_NAMES[monthKey] || monthKey;
+
+            const tbody = document.getElementById('inputFormTableBody');
+            tbody.innerHTML = '';
+
+            const monthData = appState.monthlyData[monthKey] || {};
+            const isDisabled = !isAuthenticated;
+
+            appState.master.forEach((ind) => {
+                const data = monthData[ind.id] || {};
+                const evalStatus = evaluateStatus(ind, data);
+
+                const tr = document.createElement('tr');
+                tr.className = `hover:bg-slate-50 border-b border-slate-200 ${isDisabled ? 'bg-slate-50/50' : ''}`;
+                tr.innerHTML = `
+                    <td class="p-2.5 text-center font-bold text-slate-500 border-r border-slate-200">${ind.id}</td>
+                    <td class="p-2.5 font-semibold text-slate-800 border-r border-slate-200 text-xs">${ind.unit}</td>
+                    <td class="p-2.5 border-r border-slate-200">
+                        <div class="font-medium text-slate-800">${ind.indikator}</div>
+                        <div class="text-[10px] text-slate-500 mt-0.5">Kode: ${ind.kode} | Standar: <span class="font-semibold text-slate-700">${ind.standar || 'Baku Mutu'}</span></div>
+                    </td>
+                    <td class="p-2 border-r border-slate-200">
+                        <input type="number" step="any" id="input-num-${ind.id}" ${isDisabled ? 'disabled' : ''} value="${data.numerator !== null && data.numerator !== undefined ? data.numerator : ''}" oninput="autoCalculateRow(${ind.id})" class="w-full text-xs text-center border border-slate-300 rounded p-1.5 focus:ring-2 focus:ring-hospital-500 ${isDisabled ? 'bg-slate-100 cursor-not-allowed' : ''}">
+                    </td>
+                    <td class="p-2 border-r border-slate-200">
+                        <input type="number" step="any" id="input-den-${ind.id}" ${isDisabled ? 'disabled' : ''} value="${data.denominator !== null && data.denominator !== undefined ? data.denominator : ''}" oninput="autoCalculateRow(${ind.id})" class="w-full text-xs text-center border border-slate-300 rounded p-1.5 focus:ring-2 focus:ring-hospital-500 ${isDisabled ? 'bg-slate-100 cursor-not-allowed' : ''}">
+                    </td>
+                    <td class="p-2 border-r border-slate-200">
+                        <input type="number" step="any" id="input-val-${ind.id}" ${isDisabled ? 'disabled' : ''} value="${data.capaian_nilai !== null && data.capaian_nilai !== undefined ? data.capaian_nilai : ''}" oninput="updateRowStatusBadge(${ind.id})" class="w-full text-xs text-center font-bold border border-slate-300 rounded p-1.5 focus:ring-2 focus:ring-hospital-500 ${isDisabled ? 'bg-slate-100 cursor-not-allowed' : ''}">
+                    </td>
+                    <td class="p-2 border-r border-slate-200">
+                        <input type="text" id="input-disp-${ind.id}" ${isDisabled ? 'disabled' : ''} value="${data.capaian_display || ''}" placeholder="cth: 100%" class="w-full text-xs text-center font-semibold border border-slate-300 rounded p-1.5 focus:ring-2 focus:ring-hospital-500 ${isDisabled ? 'bg-slate-100 cursor-not-allowed' : ''}">
+                    </td>
+                    <td class="p-2 text-center border-r border-slate-200" id="input-status-cell-${ind.id}">
+                        <span class="px-2 py-0.5 rounded text-[10px] ${evalStatus.bg}">${evalStatus.label}</span>
+                    </td>
+                    <td class="p-2">
+                        <input type="text" id="input-ket-${ind.id}" ${isDisabled ? 'disabled' : ''} value="${data.keterangan || ''}" placeholder="Catatan..." class="w-full text-xs border border-slate-300 rounded p-1.5 focus:ring-2 focus:ring-hospital-500 ${isDisabled ? 'bg-slate-100 cursor-not-allowed' : ''}">
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function autoCalculateRow(id) {
+            const ind = appState.master.find(i => i.id === id);
+            const numInput = document.getElementById(`input-num-${id}`);
+            const denInput = document.getElementById(`input-den-${id}`);
+            const valInput = document.getElementById(`input-val-${id}`);
+            const dispInput = document.getElementById(`input-disp-${id}`);
+
+            const num = parseFloat(numInput.value);
+            const den = parseFloat(denInput.value);
+
+            if (!isNaN(num) && !isNaN(den) && den > 0) {
+                if (ind.satuan === '%') {
+                    const pct = Math.round(((num / den) * 100) * 100) / 100;
+                    valInput.value = pct;
+                    dispInput.value = `${pct}%`;
+                } else if (ind.satuan === 'menit') {
+                    const min = Math.round((num / den) * 100) / 100;
+                    valInput.value = min;
+                    dispInput.value = `${min} menit`;
+                }
+            }
+            updateRowStatusBadge(id);
+        }
+
+        function updateRowStatusBadge(id) {
+            const ind = appState.master.find(i => i.id === id);
+            const valInput = document.getElementById(`input-val-${id}`);
+            const dispInput = document.getElementById(`input-disp-${id}`);
+            const ketInput = document.getElementById(`input-ket-${id}`);
+            const cell = document.getElementById(`input-status-cell-${id}`);
+
+            const val = valInput.value !== '' ? parseFloat(valInput.value) : null;
+            const dataObj = {
+                capaian_nilai: val,
+                capaian_display: dispInput.value || '-',
+                keterangan: ketInput.value || ''
+            };
+
+            const status = evaluateStatus(ind, dataObj);
+            cell.innerHTML = `<span class="px-2 py-0.5 rounded text-[10px] ${status.bg}">${status.label}</span>`;
+        }
+
+        function saveInputForm() {
+            if (!isAuthenticated) {
+                openLoginModal();
+                return;
+            }
+
+            const monthData = appState.monthlyData[currentSelectedMonth] || {};
+
+            appState.master.forEach(ind => {
+                const numVal = document.getElementById(`input-num-${ind.id}`).value;
+                const denVal = document.getElementById(`input-den-${ind.id}`).value;
+                const valVal = document.getElementById(`input-val-${ind.id}`).value;
+                const dispVal = document.getElementById(`input-disp-${ind.id}`).value;
+                const ketVal = document.getElementById(`input-ket-${ind.id}`).value;
+
+                monthData[ind.id] = {
+                    numerator: numVal !== '' ? parseFloat(numVal) : null,
+                    denominator: denVal !== '' ? parseFloat(denVal) : null,
+                    capaian_nilai: valVal !== '' ? parseFloat(valVal) : null,
+                    capaian_display: dispVal || '-',
+                    keterangan: ketVal || ''
+                };
+            });
+
+            appState.monthlyData[currentSelectedMonth] = monthData;
+            saveStorageState();
+            showToast(`Data mutu ${MONTH_NAMES[currentSelectedMonth]} berhasil disimpan!`, "success");
+        }
+
+        function populateTrendDropdown() {
+            const select = document.getElementById('trendIndicatorSelect');
+            select.innerHTML = '';
+            appState.master.forEach(ind => {
+                const opt = document.createElement('option');
+                opt.value = ind.id;
+                opt.innerText = `[${ind.unit}] ${ind.kode} - ${ind.indikator}`;
+                select.appendChild(opt);
+            });
+        }
+
+        function renderTrendChart() {
+            const indId = parseInt(document.getElementById('trendIndicatorSelect').value) || 1;
+            const ind = appState.master.find(i => i.id === indId);
+            const months = ["2026-01", "2026-02", "2026-03", "2026-04", "2026-05", "2026-06", "2026-07", "2026-08", "2026-09", "2026-10", "2026-11", "2026-12"];
+            const monthLabels = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
+
+            const metaBox = document.getElementById('trendIndicatorMeta');
+            metaBox.innerHTML = `
+                <div><span class="font-bold">Unit:</span> ${ind.unit} | <span class="font-bold">Kode:</span> ${ind.kode}</div>
+                <div><span class="font-bold">Standar Target:</span> ${ind.standar || 'Informasi / Baku Mutu'}</div>
+            `;
+
+            const dataPoints = [];
+            const tableBody = document.getElementById('trendMonthlyTableBody');
+
+            let trNumHtml = `<tr><td class="p-2 font-bold border border-slate-200 text-left bg-slate-50">Numerator (N)</td>`;
+            let trDenHtml = `<tr><td class="p-2 font-bold border border-slate-200 text-left bg-slate-50">Denominator (D)</td>`;
+            let trValHtml = `<tr><td class="p-2 font-bold border border-slate-200 text-left bg-slate-50">Capaian</td>`;
+            let trStHtml  = `<tr><td class="p-2 font-bold border border-slate-200 text-left bg-slate-50">Status</td>`;
+
+            months.forEach(m => {
+                const mData = (appState.monthlyData[m] || {})[ind.id] || {};
+                const val = mData.capaian_nilai !== undefined ? mData.capaian_nilai : null;
+                dataPoints.push(val);
+
+                const evalSt = evaluateStatus(ind, mData);
+
+                trNumHtml += `<td class="p-2 border border-slate-200">${mData.numerator !== null && mData.numerator !== undefined ? mData.numerator : '-'}</td>`;
+                trDenHtml += `<td class="p-2 border border-slate-200">${mData.denominator !== null && mData.denominator !== undefined ? mData.denominator : '-'}</td>`;
+                trValHtml += `<td class="p-2 border border-slate-200 font-bold">${mData.capaian_display || '-'}</td>`;
+                trStHtml  += `<td class="p-2 border border-slate-200"><span class="px-1.5 py-0.5 rounded text-[10px] ${evalSt.bg}">${evalSt.label}</span></td>`;
+            });
+
+            trNumHtml += `</tr>`;
+            trDenHtml += `</tr>`;
+            trValHtml += `</tr>`;
+            trStHtml  += `</tr>`;
+
+            tableBody.innerHTML = trNumHtml + trDenHtml + trValHtml + trStHtml;
+
+            const ctx = document.getElementById('lineTrendChart').getContext('2d');
+            if (lineChartInstance) lineChartInstance.destroy();
+
+            lineChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: monthLabels,
+                    datasets: [{
+                        label: `Capaian (${ind.satuan || 'Nilai'})`,
+                        data: dataPoints,
+                        borderColor: '#0284c7',
+                        backgroundColor: 'rgba(2, 132, 199, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.3,
+                        pointBackgroundColor: '#0369a1',
+                        pointRadius: 5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { beginAtZero: false }
+                    },
+                    plugins: {
+                        legend: { position: 'top' }
+                    }
+                }
+            });
+        }
+
+        function toggleHeatmapMode(mode) {
+            heatmapDisplayMode = mode;
+            const monthlyBtn = document.getElementById('heatmapModeMonthlyBtn');
+            const quarterlyBtn = document.getElementById('heatmapModeQuarterlyBtn');
+
+            if (mode === 'monthly') {
+                monthlyBtn.className = "px-3 py-1.5 rounded-md bg-white text-hospital-700 shadow-sm transition font-bold";
+                quarterlyBtn.className = "px-3 py-1.5 rounded-md text-slate-600 hover:text-slate-900 transition";
+            } else {
+                quarterlyBtn.className = "px-3 py-1.5 rounded-md bg-white text-hospital-700 shadow-sm transition font-bold";
+                monthlyBtn.className = "px-3 py-1.5 rounded-md text-slate-600 hover:text-slate-900 transition";
+            }
+            renderRekapMatrix();
+        }
+
+        function renderRekapMatrix() {
+            const units = Array.from(new Set(appState.master.map(i => i.unit)));
+            const thead = document.getElementById('rekapHeatmapTableHead');
+            const tbody = document.getElementById('rekapHeatmapTableBody');
+            
+            thead.innerHTML = '';
+            tbody.innerHTML = '';
+
+            document.getElementById('rekapActivePeriodTitle').innerText = MONTH_NAMES[currentSelectedMonth] || 'Bulan Terpilih';
+
+            if (heatmapDisplayMode === 'monthly') {
+                const months = ["2026-01", "2026-02", "2026-03", "2026-04", "2026-05", "2026-06", "2026-07", "2026-08", "2026-09", "2026-10", "2026-11", "2026-12"];
+                
+                thead.innerHTML = `
+                    <tr>
+                        <th class="p-3 text-left w-56 border border-slate-700">Unit Pelayanan Penunjang</th>
+                        <th class="p-3 border border-slate-700 w-12">Total Indikator</th>
+                        <th class="p-2 border border-slate-700">Jan</th>
+                        <th class="p-2 border border-slate-700">Feb</th>
+                        <th class="p-2 border border-slate-700">Mar</th>
+                        <th class="p-2 border border-slate-700">Apr</th>
+                        <th class="p-2 border border-slate-700">Mei</th>
+                        <th class="p-2 border border-slate-700">Jun</th>
+                        <th class="p-2 border border-slate-700">Jul</th>
+                        <th class="p-2 border border-slate-700">Agu</th>
+                        <th class="p-2 border border-slate-700">Sep</th>
+                        <th class="p-2 border border-slate-700">Okt</th>
+                        <th class="p-2 border border-slate-700">Nov</th>
+                        <th class="p-2 border border-slate-700">Des</th>
+                        <th class="p-3 border border-slate-700 w-20 bg-hospital-900">Rata-rata</th>
+                    </tr>
+                `;
+
+                units.forEach(unitName => {
+                    const unitIndicators = appState.master.filter(i => i.unit === unitName);
+                    const totalInd = unitIndicators.length;
+
+                    let trHtml = `<tr>
+                        <td class="p-3 text-left font-bold text-slate-800 border border-slate-200 bg-slate-50">${unitName}</td>
+                        <td class="p-2 font-bold text-slate-600 border border-slate-200">${totalInd}</td>`;
+
+                    let overallAchievedSum = 0;
+                    let overallEvaluatedSum = 0;
+
+                    months.forEach(mKey => {
+                        const mData = appState.monthlyData[mKey] || {};
+                        let monthAchieved = 0;
+                        let monthEvaluated = 0;
+
+                        unitIndicators.forEach(ind => {
+                            const st = evaluateStatus(ind, mData[ind.id]);
+                            if (st.code === 'ACHIEVED') {
+                                monthAchieved++;
+                                monthEvaluated++;
+                            } else if (st.code === 'NOT_ACHIEVED') {
+                                monthEvaluated++;
+                            }
+                        });
+
+                        if (monthEvaluated > 0) {
+                            const pct = (monthAchieved / monthEvaluated) * 100;
+                            overallAchievedSum += monthAchieved;
+                            overallEvaluatedSum += monthEvaluated;
+
+                            let bgClass = "bg-rose-100 text-rose-800 font-bold";
+                            if (pct === 100) bgClass = "bg-emerald-600 text-white font-extrabold";
+                            else if (pct >= 80) bgClass = "bg-emerald-100 text-emerald-800 font-bold";
+                            else if (pct >= 50) bgClass = "bg-amber-100 text-amber-800 font-bold";
+
+                            trHtml += `<td class="p-2 border border-slate-200 ${bgClass}">${Math.round(pct)}%</td>`;
+                        } else {
+                            trHtml += `<td class="p-2 border border-slate-200 bg-slate-100 text-slate-400">-</td>`;
+                        }
+                    });
+
+                    const overallPct = overallEvaluatedSum > 0 ? Math.round((overallAchievedSum / overallEvaluatedSum) * 100) : '-';
+                    const avgBg = typeof overallPct === 'number' ? (overallPct >= 80 ? 'bg-emerald-600 text-white' : 'bg-rose-600 text-white') : 'bg-slate-200 text-slate-600';
+                    trHtml += `<td class="p-3 border border-slate-200 font-extrabold ${avgBg}">${overallPct !== '-' ? overallPct + '%' : '-'}</td></tr>`;
+
+                    tbody.innerHTML += trHtml;
+                });
+            } else {
+                const periods = ["2026-TW1", "2026-TW2", "2026-TW3", "2026-TW4", "2026-YEAR"];
+
+                thead.innerHTML = `
+                    <tr>
+                        <th class="p-3 text-left w-56 border border-slate-700">Unit Pelayanan Penunjang</th>
+                        <th class="p-3 border border-slate-700 w-12">Total Indikator</th>
+                        <th class="p-3 border border-slate-700 bg-sky-900">Triwulan 1 (Jan–Mar)</th>
+                        <th class="p-3 border border-slate-700 bg-sky-900">Triwulan 2 (Apr–Jun)</th>
+                        <th class="p-3 border border-slate-700 bg-sky-900">Triwulan 3 (Jul–Sep)</th>
+                        <th class="p-3 border border-slate-700 bg-sky-900">Triwulan 4 (Okt–Des)</th>
+                        <th class="p-3 border border-slate-700 bg-hospital-900">Tahun 2026 (Full)</th>
+                    </tr>
+                `;
+
+                units.forEach(unitName => {
+                    const unitIndicators = appState.master.filter(i => i.unit === unitName);
+                    const totalInd = unitIndicators.length;
+
+                    let trHtml = `<tr>
+                        <td class="p-3 text-left font-bold text-slate-800 border border-slate-200 bg-slate-50">${unitName}</td>
+                        <td class="p-2 font-bold text-slate-600 border border-slate-200">${totalInd}</td>`;
+
+                    periods.forEach(pKey => {
+                        const pData = getPeriodData(pKey);
+                        let pAchieved = 0;
+                        let pEvaluated = 0;
+
+                        unitIndicators.forEach(ind => {
+                            const st = evaluateStatus(ind, pData[ind.id]);
+                            if (st.code === 'ACHIEVED') {
+                                pAchieved++;
+                                pEvaluated++;
+                            } else if (st.code === 'NOT_ACHIEVED') {
+                                pEvaluated++;
+                            }
+                        });
+
+                        if (pEvaluated > 0) {
+                            const pct = Math.round((pAchieved / pEvaluated) * 100);
+                            let bgClass = "bg-rose-100 text-rose-800 font-bold";
+                            if (pct === 100) bgClass = "bg-emerald-600 text-white font-extrabold";
+                            else if (pct >= 80) bgClass = "bg-emerald-100 text-emerald-800 font-bold";
+                            else if (pct >= 50) bgClass = "bg-amber-100 text-amber-800 font-bold";
+
+                            if (pKey === '2026-YEAR') {
+                                bgClass += " text-sm font-extrabold ring-2 ring-hospital-600";
+                            }
+
+                            trHtml += `<td class="p-3 border border-slate-200 ${bgClass}">${pct}%</td>`;
+                        } else {
+                            trHtml += `<td class="p-3 border border-slate-200 bg-slate-100 text-slate-400">-</td>`;
+                        }
+                    });
+
+                    trHtml += `</tr>`;
+                    tbody.innerHTML += trHtml;
+                });
+            }
+
+            const cardsGrid = document.getElementById('unitPerformanceCardsGrid');
+            cardsGrid.innerHTML = '';
+
+            const currentPeriodData = getPeriodData(currentSelectedMonth);
+
+            units.forEach(unitName => {
+                const unitIndicators = appState.master.filter(i => i.unit === unitName);
+                const totalInd = unitIndicators.length;
+                let monthAchievedActive = 0;
+                let monthEvaluatedActive = 0;
+
+                unitIndicators.forEach(ind => {
+                    const st = evaluateStatus(ind, currentPeriodData[ind.id]);
+                    if (st.code === 'ACHIEVED') {
+                        monthAchievedActive++;
+                        monthEvaluatedActive++;
+                    } else if (st.code === 'NOT_ACHIEVED') {
+                        monthEvaluatedActive++;
+                    }
+                });
+
+                const cardPct = monthEvaluatedActive > 0 ? Math.round((monthAchievedActive / monthEvaluatedActive) * 100) : 0;
+
+                cardsGrid.innerHTML += `
+                    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 hover:shadow-md transition space-y-3">
+                        <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+                            <h4 class="font-bold text-slate-800 text-sm">${unitName}</h4>
+                            <span class="text-xs font-bold px-2 py-0.5 rounded ${cardPct >= 80 ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">${cardPct}% Kepatuhan</span>
+                        </div>
+                        <div class="text-xs text-slate-600 space-y-1">
+                            <div class="flex justify-between"><span>Total Indikator:</span> <span class="font-bold">${totalInd}</span></div>
+                            <div class="flex justify-between"><span>Tercapai (${MONTH_NAMES[currentSelectedMonth] || currentSelectedMonth}):</span> <span class="font-bold text-emerald-600">${monthAchievedActive}</span></div>
+                            <div class="flex justify-between"><span>Tidak Tercapai:</span> <span class="font-bold text-rose-600">${monthEvaluatedActive - monthAchievedActive}</span></div>
+                        </div>
+                        <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                            <div class="bg-hospital-500 h-full transition-all duration-300" style="width: ${cardPct}%"></div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function openEditModal(id) {
+            if (!isAuthenticated) {
+                openLoginModal();
+                return;
+            }
+            editingIndicatorId = id;
+            const ind = appState.master.find(i => i.id === id);
+            const data = (appState.monthlyData[currentSelectedMonth] || {})[id] || {};
+
+            document.getElementById('modalIndicatorUnit').innerText = ind.unit;
+            document.getElementById('modalIndicatorTitle').innerText = `[${ind.kode}] ${ind.indikator}`;
+            document.getElementById('modalIndicatorStandard').innerText = `Standar: ${ind.standar || 'Baku Mutu'}`;
+
+            document.getElementById('modalNumerator').value = data.numerator !== null && data.numerator !== undefined ? data.numerator : '';
+            document.getElementById('modalDenominator').value = data.denominator !== null && data.denominator !== undefined ? data.denominator : '';
+            document.getElementById('modalCapaianNilai').value = data.capaian_nilai !== null && data.capaian_nilai !== undefined ? data.capaian_nilai : '';
+            document.getElementById('modalCapaianDisplay').value = data.capaian_display || '';
+            document.getElementById('modalKeterangan').value = data.keterangan || '';
+
+            document.getElementById('editModal').classList.remove('hidden');
+        }
+
+        function closeEditModal() {
+            document.getElementById('editModal').classList.add('hidden');
+            editingIndicatorId = null;
+        }
+
+        function calculateModalCapaian() {
+            if (!editingIndicatorId) return;
+            const ind = appState.master.find(i => i.id === editingIndicatorId);
+            const num = parseFloat(document.getElementById('modalNumerator').value);
+            const den = parseFloat(document.getElementById('modalDenominator').value);
+
+            if (!isNaN(num) && !isNaN(den) && den > 0) {
+                if (ind.satuan === '%') {
+                    const pct = Math.round(((num / den) * 100) * 100) / 100;
+                    document.getElementById('modalCapaianNilai').value = pct;
+                    document.getElementById('modalCapaianDisplay').value = `${pct}%`;
+                } else if (ind.satuan === 'menit') {
+                    const min = Math.round((num / den) * 100) / 100;
+                    document.getElementById('modalCapaianNilai').value = min;
+                    document.getElementById('modalCapaianDisplay').value = `${min} menit`;
+                }
+            }
+        }
+
+        function saveEditModalData() {
+            if (!editingIndicatorId) return;
+            const numVal = document.getElementById('modalNumerator').value;
+            const denVal = document.getElementById('modalDenominator').value;
+            const valVal = document.getElementById('modalCapaianNilai').value;
+            const dispVal = document.getElementById('modalCapaianDisplay').value;
+            const ketVal = document.getElementById('modalKeterangan').value;
+
+            if (!appState.monthlyData[currentSelectedMonth]) {
+                appState.monthlyData[currentSelectedMonth] = {};
+            }
+
+            appState.monthlyData[currentSelectedMonth][editingIndicatorId] = {
+                numerator: numVal !== '' ? parseFloat(numVal) : null,
+                denominator: denVal !== '' ? parseFloat(denVal) : null,
+                capaian_nilai: valVal !== '' ? parseFloat(valVal) : null,
+                capaian_display: dispVal || '-',
+                keterangan: ketVal || ''
+            };
+
+            saveStorageState();
+            closeEditModal();
+            renderDashboard();
+            showToast("Data indikator berhasil diperbarui!", "success");
+        }
+
+        function openConfirmModal(title, message, callback) {
+            document.getElementById('confirmModalTitle').innerText = title;
+            document.getElementById('confirmModalMessage').innerText = message;
+            confirmActionCallback = callback;
+            document.getElementById('confirmModal').classList.remove('hidden');
+        }
+
+        function closeConfirmModal(confirmed) {
+            document.getElementById('confirmModal').classList.add('hidden');
+            if (confirmed && typeof confirmActionCallback === 'function') {
+                confirmActionCallback();
+            }
+            confirmActionCallback = null;
+        }
+
+        function handleResetWithAuth() {
+            if (!isAuthenticated) {
+                openLoginModal();
+                return;
+            }
+            openConfirmModal(
+                "Reset ke Data Default?",
+                "Tindakan ini akan mengosongkan semua bulan dan mengembalikan data April 2026 ke standar contoh awal.",
+                () => {
+                    appState.monthlyData = {
+                        "2026-01": {}, "2026-02": {}, "2026-03": {},
+                        "2026-04": JSON.parse(JSON.stringify(DEFAULT_APRIL_DATA)),
+                        "2026-05": {}, "2026-06": {}, "2026-07": {}, "2026-08": {},
+                        "2026-09": {}, "2026-10": {}, "2026-11": {}, "2026-12": {}
+                    };
+                    saveStorageState();
+                    renderDashboard();
+                    showToast("Data berhasil direset ke standar default!", "success");
+                }
+            );
+        }
+
+        function exportJSON() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appState, null, 2));
+            const dlAnchor = document.createElement('a');
+            dlAnchor.setAttribute("href", dataStr);
+            dlAnchor.setAttribute("download", `Mutu_RSUD_2026_Backup.json`);
+            document.body.appendChild(dlAnchor);
+            dlAnchor.click();
+            dlAnchor.remove();
+            showToast("Backup data JSON berhasil didownload!", "success");
+        }
+
+        function handleImportWithAuth(event) {
+            if (!isAuthenticated) {
+                openLoginModal();
+                return;
+            }
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const parsed = JSON.parse(e.target.result);
+                    if (parsed && parsed.monthlyData) {
+                        appState.monthlyData = parsed.monthlyData;
+                        saveStorageState();
+                        renderDashboard();
+                        showToast("Data JSON berhasil diimport!", "success");
+                    } else {
+                        showToast("Format file JSON tidak valid!", "error");
+                    }
+                } catch (err) {
+                    showToast("Gagal membaca file JSON!", "error");
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function exportCSV() {
+            const periodData = getPeriodData(currentSelectedMonth);
+            let csvContent = "\uFEFF";
+            csvContent += "ID;Unit;Kode;Indikator Mutu;Standar;Numerator;Denominator;Capaian Nilai;Capaian Display;Status;Keterangan\n";
+
+            appState.master.forEach(ind => {
+                const data = periodData[ind.id] || {};
+                const st = evaluateStatus(ind, data);
+
+                const row = [
+                    ind.id,
+                    `"${ind.unit}"`,
+                    `"${ind.kode}"`,
+                    `"${ind.indikator.replace(/"/g, '""')}"`,
+                    `"${(ind.standar || '').replace(/"/g, '""')}"`,
+                    data.numerator !== null && data.numerator !== undefined ? data.numerator : '',
+                    data.denominator !== null && data.denominator !== undefined ? data.denominator : '',
+                    data.capaian_nilai !== null && data.capaian_nilai !== undefined ? data.capaian_nilai : '',
+                    `"${(data.capaian_display || '').replace(/"/g, '""')}"`,
+                    `"${st.label}"`,
+                    `"${(data.keterangan || '').replace(/"/g, '""')}"`
+                ];
+                csvContent += row.join(";") + "\n";
+            });
+
+            const encodedUri = encodeURI("data:text/csv;charset=utf-8," + csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `Report_Mutu_RSUD_${currentSelectedMonth}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            showToast(`File CSV untuk ${MONTH_NAMES[currentSelectedMonth] || currentSelectedMonth} berhasil diexport!`, "success");
+        }
+
+        function showToast(message, type = "success") {
+            const toast = document.getElementById('toast');
+            const icon = document.getElementById('toastIcon');
+            const msg = document.getElementById('toastMessage');
+
+            msg.innerText = message;
+            if (type === "success") {
+                icon.className = "fa-solid fa-circle-check text-emerald-400 text-lg";
+            } else if (type === "error") {
+                icon.className = "fa-solid fa-circle-xmark text-rose-400 text-lg";
+            } else {
+                icon.className = "fa-solid fa-circle-info text-sky-400 text-lg";
+            }
+
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+
+        window.onload = function() {
+            loadStorageState();
+
+            // Populate filter selects
+            const unitSelect = document.getElementById('filterUnit');
+            const units = Array.from(new Set(appState.master.map(i => i.unit)));
+            units.forEach(u => {
+                const opt = document.createElement('option');
+                opt.value = u;
+                opt.innerText = u;
+                unitSelect.appendChild(opt);
+            });
+
+            const kodeSelect = document.getElementById('filterKode');
+            const kodes = Array.from(new Set(appState.master.map(i => i.kode)));
+            kodes.forEach(k => {
+                const opt = document.createElement('option');
+                opt.value = k;
+                opt.innerText = k;
+                kodeSelect.appendChild(opt);
+            });
+
+            populateTrendDropdown();
+            updateAuthUI();
+            renderDashboard();
+        };
+    </script>
+</body>
+</html>
