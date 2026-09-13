@@ -40,9 +40,16 @@
         .custom-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        .print-only { display: none; }
         @media print {
             .no-print { display: none !important; }
             .print-only { display: block !important; }
+            body { background: white !important; color: #0f172a !important; font-size: 11pt; }
+            main { max-width: 100% !important; width: 100% !important; padding: 0 !important; margin: 0 !important; }
+            .shadow-sm, .shadow-md, .shadow-lg, .shadow-2xl { box-shadow: none !important; }
+            table { width: 100% !important; border-collapse: collapse !important; }
+            tr { page-break-inside: avoid !important; }
+            th, td { border: 1px solid #cbd5e1 !important; padding: 6px !important; }
         }
     </style>
 </head>
@@ -67,7 +74,7 @@
 
                 <!-- Global Action Toolbar -->
                 <div class="flex flex-wrap items-center gap-2 sm:gap-3">
-                    <!-- Auth Status Indicator & Login/Logout Button -->
+                    <!-- Auth Status Indicator -->
                     <div id="authBadge" class="flex items-center gap-2 bg-white/10 px-3 py-1.5 rounded-lg border border-white/20 text-xs">
                         <span id="authStatusDot" class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
                         <span id="authStatusText" class="font-medium text-amber-200">Mode Lihat</span>
@@ -105,7 +112,7 @@
                         </select>
                     </div>
 
-                    <!-- Dropdown Export / Data Ops -->
+                    <!-- Export & Operations Toolbar -->
                     <button onclick="exportJSON()" title="Export JSON" class="bg-white/10 hover:bg-white/20 text-white p-2 text-xs sm:text-sm rounded-lg transition">
                         <i class="fa-solid fa-file-export"></i>
                     </button>
@@ -115,6 +122,10 @@
                     </label>
                     <button onclick="exportCSV()" title="Export CSV" class="bg-emerald-600 hover:bg-emerald-700 text-white p-2 text-xs sm:text-sm rounded-lg transition">
                         <i class="fa-solid fa-file-excel"></i>
+                    </button>
+                    <button onclick="handlePrintReport()" title="Cetak Laporan / Simpan PDF" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-2 text-xs sm:text-sm rounded-lg transition flex items-center gap-1.5 shadow-sm">
+                        <i class="fa-solid fa-print"></i>
+                        <span class="hidden sm:inline font-semibold">Cetak Laporan</span>
                     </button>
                     <button id="resetDataBtn" onclick="handleResetWithAuth()" title="Reset Default (Khusus Petugas)" class="bg-rose-600/50 cursor-not-allowed text-white p-2 text-xs sm:text-sm rounded-lg transition">
                         <i class="fa-solid fa-rotate-left"></i>
@@ -144,9 +155,27 @@
         </div>
     </header>
 
-    <!-- Main Container -->
     <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
 
+        <!-- Kop Surat Resmi Untuk Cetak Standard -->
+        <div class="print-only mb-6 pb-4 border-b-2 border-slate-900">
+            <div class="flex items-center justify-between border-b pb-3 mb-3 border-slate-400">
+                <div>
+                    <h2 class="text-xs font-bold uppercase tracking-wider text-slate-900">PEMERINTAH KABUPATEN KAPUAS</h2>
+                    <h1 class="text-lg font-extrabold text-slate-900 uppercase">RSUD Dr. H. SOEMARNO SOSROATMODJO</h1>
+                    <p class="text-[11px] text-slate-700">Jl. Tambun Bungai No. 16, Kuala Kapuas, Kalimantan Tengah | Seksi Mutu Pelayanan</p>
+                </div>
+                <div class="text-right">
+                    <span class="text-[10px] font-bold px-2 py-1 bg-slate-100 rounded border border-slate-300">DOKUMEN MUTU RESMI</span>
+                </div>
+            </div>
+            <div class="text-center my-3">
+                <h3 class="text-base font-bold text-slate-900 uppercase underline">LAPORAN CAPAIAN INDIKATOR MUTU UNIT PENUNJANG</h3>
+                <p id="printReportPeriodTitle" class="text-xs font-semibold text-slate-700 mt-0.5">Periode: April 2026</p>
+            </div>
+        </div>
+
+        <!-- TAB 1: DASHBOARD VIEW -->
         <section id="view-dashboard" class="space-y-6">
             <!-- Active Month Alert Banner -->
             <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 flex flex-col sm:flex-row items-center justify-between gap-3">
@@ -337,51 +366,56 @@
             </div>
         </section>
 
-
+        <!-- TAB 2: INPUT FORM VIEW -->
         <section id="view-input" class="space-y-6 hidden">
-            <!-- Locked View Banner -->
-            <div id="inputLockedBanner" class="bg-amber-50 border border-amber-200 rounded-xl p-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-amber-900">
+            <!-- Locked Alert Banner -->
+            <div id="inputLockedBanner" class="bg-amber-50 border border-amber-200 rounded-xl p-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-amber-800">
                 <div class="flex items-center space-x-3">
-                    <span class="p-2.5 rounded-lg bg-amber-100 text-amber-700 font-bold">
-                        <i class="fa-solid fa-lock text-xl"></i>
-                    </span>
+                    <i class="fa-solid fa-lock text-amber-600 text-xl"></i>
                     <div>
-                        <h4 class="font-bold text-sm">Mode Edit Terkunci (Mode Lihat Aktif)</h4>
-                        <p class="text-xs text-amber-700">Anda dapat melihat data. Untuk mengubah atau menginput nilai indikator, silakan login sebagai petugas terlebih dahulu.</p>
+                        <h4 class="font-bold text-sm">Form Input Bulanan Terkunci (Mode Lihat)</h4>
+                        <p class="text-xs text-amber-700">Silakan login sebagai Petugas untuk mengedit numeris dan keterangan capaian mutu.</p>
                     </div>
                 </div>
-                <button onclick="openLoginModal()" class="bg-amber-600 hover:bg-amber-700 text-white font-semibold text-xs px-4 py-2 rounded-lg transition flex items-center gap-1.5 whitespace-nowrap">
-                    <i class="fa-solid fa-key"></i> Login Buka Akses Edit
+                <button onclick="openLoginModal()" class="bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold px-4 py-2 rounded-lg transition shadow-sm whitespace-nowrap">
+                    Login Petugas Sekarang
                 </button>
             </div>
 
-            <!-- Input Form Card -->
-            <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-                <div class="p-5 border-b border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+                <div class="flex items-center space-x-3">
+                    <span class="p-2.5 rounded-lg bg-hospital-50 text-hospital-600 font-bold">
+                        <i class="fa-solid fa-pen-to-square text-xl"></i>
+                    </span>
                     <div>
-                        <span class="text-xs font-bold uppercase tracking-wider text-hospital-600">Pengisian Data Bulanan</span>
+                        <span class="text-xs uppercase tracking-wider text-slate-500 font-bold">Form Input Data Bulanan</span>
                         <h2 id="inputMonthTitle" class="text-lg font-bold text-slate-800">April 2026</h2>
-                        <p class="text-xs text-slate-500">Isi nilai Numerator & Denominator untuk otomatis mengkalkulasi persen/waktu capaian.</p>
                     </div>
-                    <button id="saveInputBtn" onclick="saveInputForm()" class="bg-hospital-600 hover:bg-hospital-700 text-white font-bold text-xs sm:text-sm px-5 py-2.5 rounded-lg transition flex items-center gap-2 shadow-md">
-                        <i class="fa-solid fa-floppy-disk"></i>
-                        <span>Simpan Perubahan Data</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span id="inputLockBadge" class="px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800 border border-amber-200 flex items-center gap-1.5">
+                        <i class="fa-solid fa-lock text-xs"></i> Mode Terkunci
+                    </span>
+                    <button id="saveInputBtn" onclick="saveInputForm()" disabled class="bg-hospital-600 hover:bg-hospital-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-bold text-xs sm:text-sm px-4 py-2 rounded-lg transition flex items-center gap-2 shadow-sm">
+                        <i class="fa-solid fa-floppy-disk"></i> Simpan Data Bulan Ini
                     </button>
                 </div>
+            </div>
 
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
                 <div class="overflow-x-auto custom-scrollbar">
-                    <table class="w-full text-left text-xs text-slate-700 border-collapse">
-                        <thead class="bg-slate-800 text-white font-semibold uppercase">
+                    <table class="w-full text-left text-xs text-slate-700">
+                        <thead class="bg-slate-100 text-slate-600 uppercase font-semibold border-b border-slate-200">
                             <tr>
-                                <th class="p-3 text-center w-12 border-r border-slate-700">No</th>
-                                <th class="p-3 w-32 border-r border-slate-700">Unit</th>
-                                <th class="p-3 min-w-[240px] border-r border-slate-700">Indikator Mutu</th>
-                                <th class="p-3 w-28 text-center border-r border-slate-700">Numerator (N)</th>
-                                <th class="p-3 w-28 text-center border-r border-slate-700">Denominator (D)</th>
-                                <th class="p-3 w-28 text-center border-r border-slate-700">Capaian (Nilai)</th>
-                                <th class="p-3 w-32 text-center border-r border-slate-700">Display Capaian</th>
-                                <th class="p-3 w-28 text-center border-r border-slate-700">Status</th>
-                                <th class="p-3 min-w-[180px]">Keterangan</th>
+                                <th class="py-3 px-2 text-center w-10">No</th>
+                                <th class="py-3 px-3 w-32">Unit</th>
+                                <th class="py-3 px-4 min-w-[240px]">Indikator Mutu</th>
+                                <th class="py-3 px-3 w-28 text-center">Numerator (N)</th>
+                                <th class="py-3 px-3 w-28 text-center">Denominator (D)</th>
+                                <th class="py-3 px-3 w-28 text-center">Capaian (Nilai)</th>
+                                <th class="py-3 px-3 w-28 text-center">Capaian (Display)</th>
+                                <th class="py-3 px-3 w-24 text-center">Status Auto</th>
+                                <th class="py-3 px-4 min-w-[180px]">Keterangan</th>
                             </tr>
                         </thead>
                         <tbody id="inputFormTableBody" class="divide-y divide-slate-200">
@@ -392,58 +426,57 @@
             </div>
         </section>
 
-
+        <!-- TAB 3: TREND VIEW -->
         <section id="view-trend" class="space-y-6 hidden">
-            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-200 gap-3">
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 space-y-4">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-100 pb-4">
                     <div>
-                        <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
-                            <i class="fa-solid fa-chart-line text-hospital-500"></i>
-                            Analisis Tren Ketercapaian Mutu (Jan – Des 2026)
-                        </h2>
-                        <p class="text-xs text-slate-500">Pilih indikator untuk memantau grafik perjalanan capaian sepanjang 12 bulan.</p>
+                        <h3 class="font-bold text-slate-800 text-base flex items-center gap-2">
+                            <i class="fa-solid fa-chart-line text-hospital-600"></i>
+                            Analisis Tren Capaian Indikator (Januari – Desember 2026)
+                        </h3>
+                        <p class="text-xs text-slate-500">Pilih indikator mutu untuk melihat grafik tren perjalanan 1 tahun</p>
                     </div>
-
-                    <div class="w-full sm:w-80">
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">Pilih Indikator Mutu:</label>
-                        <select id="trendIndicatorSelect" onchange="renderTrendChart()" class="w-full text-xs rounded-lg border border-slate-300 px-3 py-2 focus:ring-2 focus:ring-hospital-500 focus:outline-none font-medium">
+                    <div class="min-w-[280px]">
+                        <select id="trendIndicatorSelect" onchange="renderTrendChart()" class="w-full text-xs font-semibold rounded-lg border border-slate-300 px-3 py-2 focus:ring-2 focus:ring-hospital-500 focus:outline-none">
                             <!-- Populated dynamically -->
                         </select>
                     </div>
                 </div>
 
-                <!-- Indicator Meta Info Badge -->
-                <div id="trendIndicatorMeta" class="mt-4 bg-hospital-50 border border-hospital-200 rounded-lg p-3 text-xs flex flex-wrap gap-4 items-center justify-between text-hospital-900">
+                <div id="trendIndicatorMeta" class="bg-hospital-50 border border-hospital-200 rounded-lg p-3 text-xs text-hospital-900 flex flex-wrap justify-between gap-2">
                     <!-- Populated dynamically -->
                 </div>
 
-                <!-- Line Chart Container -->
-                <div class="mt-6 h-80">
+                <div class="h-72">
                     <canvas id="lineTrendChart"></canvas>
                 </div>
+            </div>
 
-                <!-- 12 Month Table Summary -->
-                <div class="mt-6 overflow-x-auto custom-scrollbar">
-                    <h3 class="font-bold text-sm text-slate-800 mb-2">Ringkasan Data Monthly 2026</h3>
-                    <table class="w-full text-xs text-center border-collapse border border-slate-200">
-                        <thead class="bg-slate-100 text-slate-700 font-bold">
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                <div class="px-5 py-3 border-b border-slate-100">
+                    <h4 class="font-bold text-slate-800 text-sm">Ringkasan Monthly Snapshot (12 Bulan)</h4>
+                </div>
+                <div class="overflow-x-auto custom-scrollbar">
+                    <table class="w-full text-center text-xs text-slate-700">
+                        <thead class="bg-slate-50 text-slate-600 uppercase font-semibold border-b border-slate-200">
                             <tr>
-                                <th class="p-2 border border-slate-200">Metrik</th>
-                                <th class="p-2 border border-slate-200">Jan</th>
-                                <th class="p-2 border border-slate-200">Feb</th>
-                                <th class="p-2 border border-slate-200">Mar</th>
-                                <th class="p-2 border border-slate-200">Apr</th>
-                                <th class="p-2 border border-slate-200">Mei</th>
-                                <th class="p-2 border border-slate-200">Jun</th>
-                                <th class="p-2 border border-slate-200">Jul</th>
-                                <th class="p-2 border border-slate-200">Agu</th>
-                                <th class="p-2 border border-slate-200">Sep</th>
-                                <th class="p-2 border border-slate-200">Okt</th>
-                                <th class="p-2 border border-slate-200">Nov</th>
-                                <th class="p-2 border border-slate-200">Des</th>
+                                <th class="py-3 px-3 text-left w-36">Parameter</th>
+                                <th class="py-3 px-2">Jan</th>
+                                <th class="py-3 px-2">Feb</th>
+                                <th class="py-3 px-2">Mar</th>
+                                <th class="py-3 px-2">Apr</th>
+                                <th class="py-3 px-2">Mei</th>
+                                <th class="py-3 px-2">Jun</th>
+                                <th class="py-3 px-2">Jul</th>
+                                <th class="py-3 px-2">Agu</th>
+                                <th class="py-3 px-2">Sep</th>
+                                <th class="py-3 px-2">Okt</th>
+                                <th class="py-3 px-2">Nov</th>
+                                <th class="py-3 px-2">Des</th>
                             </tr>
                         </thead>
-                        <tbody id="trendMonthlyTableBody">
+                        <tbody id="trendMonthlyTableBody" class="divide-y divide-slate-100">
                             <!-- Populated dynamically -->
                         </tbody>
                     </table>
@@ -451,175 +484,194 @@
             </div>
         </section>
 
-
+        <!-- TAB 4: REKAP MATRIX HEATMAP VIEW -->
         <section id="view-rekap" class="space-y-6 hidden">
-            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
-                <div class="flex flex-col md:flex-row md:items-center justify-between pb-4 border-b border-slate-200 gap-3">
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 space-y-4">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-100 pb-4">
                     <div>
-                        <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
-                            <i class="fa-solid fa-table-cells text-hospital-500"></i>
-                            Matrix Heatmap Kepatuhan Unit (2026)
-                        </h2>
-                        <p class="text-xs text-slate-500">Persentase kepatuhan indikator mutu per unit pelayanan penunjang sepanjang tahun 2026.</p>
+                        <h3 class="font-bold text-slate-800 text-base flex items-center gap-2">
+                            <i class="fa-solid fa-table-cells text-hospital-600"></i>
+                            Matrix Heatmap Kepatuhan Mutu Unit Penunjang
+                        </h3>
+                        <p id="rekapActivePeriodTitle" class="text-xs text-slate-500">Persentase Kepatuhan Indikator per Unit Pelayanan</p>
                     </div>
-
-                    <!-- Heatmap View Mode Selector -->
-                    <div class="flex items-center gap-2">
-                        <div class="bg-slate-100 p-1 rounded-lg border border-slate-200 flex text-xs font-semibold">
-                            <button id="heatmapModeMonthlyBtn" onclick="toggleHeatmapMode('monthly')" class="px-3 py-1.5 rounded-md bg-white text-hospital-700 shadow-sm transition">
-                                Mode Bulanan (12 Bulan)
-                            </button>
-                            <button id="heatmapModeQuarterlyBtn" onclick="toggleHeatmapMode('quarterly')" class="px-3 py-1.5 rounded-md text-slate-600 hover:text-slate-900 transition">
-                                Mode Triwulan & Tahunan
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Legend -->
-                <div class="flex flex-wrap items-center gap-2 text-xs mt-3">
-                    <span class="flex items-center gap-1.5 px-2 py-1 rounded bg-emerald-100 text-emerald-800 font-medium">
-                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-600"></span> 100% Sempurna
-                    </span>
-                    <span class="flex items-center gap-1.5 px-2 py-1 rounded bg-emerald-50 text-emerald-700 font-medium border border-emerald-200">
-                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span> ≥ 80% Baik
-                    </span>
-                    <span class="flex items-center gap-1.5 px-2 py-1 rounded bg-amber-100 text-amber-800 font-medium">
-                        <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span> 50-79% Perlu Perhatian
-                    </span>
-                    <span class="flex items-center gap-1.5 px-2 py-1 rounded bg-rose-100 text-rose-800 font-medium">
-                        <span class="w-2.5 h-2.5 rounded-full bg-rose-600"></span> &lt; 50% Kurang
-                    </span>
-                    <span class="flex items-center gap-1.5 px-2 py-1 rounded bg-slate-100 text-slate-600 font-medium">
-                        <span class="w-2.5 h-2.5 rounded-full bg-slate-400"></span> Belum Ada Data
-                    </span>
-                </div>
-
-                <!-- Matrix Table Container -->
-                <div class="mt-4 overflow-x-auto custom-scrollbar">
-                    <table class="w-full text-xs text-center border-collapse border border-slate-200">
-                        <thead id="rekapHeatmapTableHead" class="bg-slate-800 text-white font-bold uppercase tracking-wider">
-                            <!-- Populated dynamically -->
-                        </thead>
-                        <tbody id="rekapHeatmapTableBody">
-                            <!-- Populated dynamically -->
-                        </tbody>
-                    </table>
-                </div>
-
-                <!-- Unit Performance Cards -->
-                <div class="mt-8">
-                    <h3 class="font-bold text-slate-800 text-base mb-3 flex items-center gap-2">
-                        <i class="fa-solid fa-list-check text-hospital-500"></i>
-                        Ringkasan Performa Per Unit (<span id="rekapActivePeriodTitle">Bulan Terpilih</span>)
-                    </h3>
-                    <div id="unitPerformanceCardsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        <!-- Populated dynamically -->
-                    </div>
-                </div>
-            </div>
-        </section>
-    </main>
-
-    <!-- Custom Toast Notification -->
-    <div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 ease-in-out bg-slate-900 text-white px-4 py-3 rounded-xl shadow-2xl border border-slate-700 flex items-center gap-3 pointer-events-none">
-        <i id="toastIcon" class="fa-solid fa-circle-check text-emerald-400 text-lg"></i>
-        <span id="toastMessage" class="text-xs sm:text-sm font-medium">Pesan notifikasi</span>
-    </div>
-
-    <!-- Login Modal -->
-    <div id="loginModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 hidden">
-        <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 max-w-sm w-full overflow-hidden transform transition-all">
-            <div class="bg-hospital-900 text-white px-6 py-4 flex items-center justify-between">
-                <h3 class="font-bold text-base flex items-center gap-2">
-                    <i class="fa-solid fa-user-shield text-amber-400"></i>
-                    Login Petugas Mutu
-                </h3>
-                <button onclick="closeLoginModal()" class="text-white/70 hover:text-white text-lg">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-            </div>
-            <form onsubmit="handleLoginSubmit(event)" class="p-6 space-y-4 text-xs">
-                <p class="text-slate-600">Masukkan kata sandi petugas untuk membuka hak akses penginputan dan perubahan data indikator mutu.</p>
-                
-                <div>
-                    <label class="block font-semibold text-slate-700 mb-1">Kata Sandi / Password</label>
-                    <div class="relative">
-                        <input type="password" id="loginPasswordInput" placeholder="Masukkan password..." required class="w-full text-xs rounded-lg border border-slate-300 pl-3 pr-10 py-2.5 focus:ring-2 focus:ring-hospital-500 focus:outline-none">
-                        <button type="button" onclick="togglePasswordVisibility()" class="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600">
-                            <i id="eyeIcon" class="fa-solid fa-eye"></i>
+                    <div class="flex items-center bg-slate-100 p-1 rounded-lg border border-slate-200 text-xs font-semibold">
+                        <button id="heatmapModeMonthlyBtn" onclick="toggleHeatmapMode('monthly')" class="px-3 py-1.5 rounded-md bg-white text-hospital-700 shadow-sm transition font-bold">
+                            Tampilan Bulanan (12 Bulan)
+                        </button>
+                        <button id="heatmapModeQuarterlyBtn" onclick="toggleHeatmapMode('quarterly')" class="px-3 py-1.5 rounded-md text-slate-600 hover:text-slate-900 transition">
+                            Tampilan Triwulan & Tahunan
                         </button>
                     </div>
                 </div>
 
-                <div class="pt-2 flex justify-end gap-2">
-                    <button type="button" onclick="closeLoginModal()" class="px-4 py-2 rounded-lg text-slate-600 hover:bg-slate-100 font-semibold">Batal</button>
-                    <button type="submit" class="px-4 py-2 rounded-lg bg-hospital-600 hover:bg-hospital-700 text-white font-bold flex items-center gap-1.5 shadow">
-                        <i class="fa-solid fa-lock-open"></i> Masuk Mode Edit
+                <div class="overflow-x-auto custom-scrollbar">
+                    <table class="w-full text-center text-xs text-slate-700 border-collapse">
+                        <thead id="rekapHeatmapTableHead" class="bg-slate-800 text-white uppercase font-bold text-[11px]">
+                            <!-- Populated dynamically -->
+                        </thead>
+                        <tbody id="rekapHeatmapTableBody" class="divide-y divide-slate-200">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Unit Performance Cards Grid -->
+            <div class="space-y-3">
+                <h3 class="font-bold text-slate-800 text-base flex items-center gap-2">
+                    <i class="fa-solid fa-cubes text-hospital-600"></i>
+                    Ringkasan Performa Unit (Periode Aktif)
+                </h3>
+                <div id="unitPerformanceCardsGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Lembar Pengesahan Untuk Cetak -->
+        <div class="print-only mt-8 pt-4 border-t border-slate-300 text-xs">
+            <div class="flex justify-between items-start text-slate-900">
+                <div class="text-center w-56">
+                    <p>Mengetahui,</p>
+                    <p class="font-bold mt-1">Kepala Seksi Mutu Pelayanan</p>
+                    <div class="h-16"></div>
+                    <p class="font-bold underline">(...................................................)</p>
+                    <p class="text-[10px]">NIP. ...........................................</p>
+                </div>
+                <div class="text-center w-56">
+                    <p>Kuala Kapuas, <span id="printCurrentDate">--</span></p>
+                    <p class="font-bold mt-1">Penanggung Jawab Data Mutu</p>
+                    <div class="h-16"></div>
+                    <p class="font-bold underline">(...................................................)</p>
+                    <p class="text-[10px]">NIP. ...........................................</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer Informasi Resmi -->
+    <footer class="bg-slate-900 text-white text-xs py-4 border-t border-slate-800 no-print mt-auto">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-3">
+            <div class="text-slate-400 text-center sm:text-left">
+                <p class="font-semibold text-slate-300">Seksi Mutu Pelayanan RSUD dr. H. Soemarno Sosroatmodjo</p>
+                <p class="text-[11px]">Jl. Tambun Bungai No. 16, Kuala Kapuas, Kalimantan Tengah</p>
+            </div>
+            <div class="text-slate-400 text-center sm:text-right text-[11px]">
+                <p>Aplikasi Dashboard Mutu RS © 2026. Hak Cipta Dilindungi.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="fixed inset-0 z-50 bg-slate-900/70 backdrop-blur-sm flex items-center justify-center p-4 hidden no-print">
+        <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 max-w-sm w-full p-6 space-y-4">
+            <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+                <div class="flex items-center space-x-2 text-hospital-700">
+                    <i class="fa-solid fa-user-shield text-xl"></i>
+                    <h3 class="font-bold text-slate-800 text-base">Login Petugas Data</h3>
+                </div>
+                <button onclick="closeLoginModal()" class="text-slate-400 hover:text-slate-600 text-lg">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <form onsubmit="handleLoginSubmit(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Password Akses Petugas</label>
+                    <div class="relative">
+                        <input type="password" id="loginPasswordInput" required placeholder="Masukkan password..." class="w-full text-xs rounded-lg border border-slate-300 px-3 py-2 pr-10 focus:ring-2 focus:ring-hospital-500 focus:outline-none">
+                        <button type="button" onclick="togglePasswordVisibility()" class="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600 text-xs">
+                            <i id="eyeIcon" class="fa-solid fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" onclick="closeLoginModal()" class="px-4 py-2 rounded-lg text-slate-600 hover:bg-slate-100 text-xs font-semibold">Batal</button>
+                    <button type="submit" class="px-5 py-2 rounded-lg bg-hospital-600 hover:bg-hospital-700 text-white text-xs font-bold shadow-sm">
+                        Masuk Mode Edit
                     </button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- Quick Edit Modal -->
-    <div id="editModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 hidden">
-        <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 max-w-lg w-full overflow-hidden transform transition-all">
-            <div class="bg-hospital-900 text-white px-6 py-4 flex items-center justify-between">
-                <h3 class="font-bold text-base flex items-center gap-2">
-                    <i class="fa-solid fa-pen-to-square"></i>
-                    Edit Data Indikator
-                </h3>
-                <button onclick="closeEditModal()" class="text-white/70 hover:text-white text-lg">
+    <!-- Edit Modal -->
+    <div id="editModal" class="fixed inset-0 z-50 bg-slate-900/70 backdrop-blur-sm flex items-center justify-center p-4 hidden no-print">
+        <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 max-w-lg w-full p-6 space-y-4">
+            <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+                <div>
+                    <span id="modalIndicatorUnit" class="text-[10px] font-extrabold uppercase bg-hospital-100 text-hospital-800 px-2 py-0.5 rounded">UTD</span>
+                    <h3 id="modalIndicatorTitle" class="font-bold text-slate-800 text-sm mt-1">Judul Indikator</h3>
+                    <p id="modalIndicatorStandard" class="text-xs text-slate-500">Standar: 100%</p>
+                </div>
+                <button onclick="closeEditModal()" class="text-slate-400 hover:text-slate-600 text-lg">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
-            <div class="p-6 space-y-4 text-xs">
-                <div>
-                    <span id="modalIndicatorUnit" class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-hospital-100 text-hospital-800">UTD</span>
-                    <h4 id="modalIndicatorTitle" class="text-sm font-bold text-slate-800 mt-1">Judul Indikator</h4>
-                    <p id="modalIndicatorStandard" class="text-slate-500 mt-0.5">Standar: 100%</p>
-                </div>
-
+            <div class="space-y-3 text-xs">
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label class="block font-semibold text-slate-700 mb-1">Numerator (N)</label>
-                        <input type="number" step="any" id="modalNumerator" oninput="calculateModalCapaian()" class="w-full text-xs rounded-lg border border-slate-300 px-3 py-2 focus:ring-2 focus:ring-hospital-500">
+                        <label class="block font-semibold text-slate-600 mb-1">Numerator (N)</label>
+                        <input type="number" step="any" id="modalNumerator" oninput="calculateModalCapaian()" class="w-full text-xs rounded-lg border border-slate-300 p-2 focus:ring-2 focus:ring-hospital-500">
                     </div>
                     <div>
-                        <label class="block font-semibold text-slate-700 mb-1">Denominator (D)</label>
-                        <input type="number" step="any" id="modalDenominator" oninput="calculateModalCapaian()" class="w-full text-xs rounded-lg border border-slate-300 px-3 py-2 focus:ring-2 focus:ring-hospital-500">
+                        <label class="block font-semibold text-slate-600 mb-1">Denominator (D)</label>
+                        <input type="number" step="any" id="modalDenominator" oninput="calculateModalCapaian()" class="w-full text-xs rounded-lg border border-slate-300 p-2 focus:ring-2 focus:ring-hospital-500">
                     </div>
                 </div>
-
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label class="block font-semibold text-slate-700 mb-1">Capaian Angka (Nilai)</label>
-                        <input type="number" step="any" id="modalCapaianNilai" class="w-full text-xs rounded-lg border border-slate-300 px-3 py-2 focus:ring-2 focus:ring-hospital-500">
+                        <label class="block font-semibold text-slate-600 mb-1">Capaian (Angka Numerik)</label>
+                        <input type="number" step="any" id="modalCapaianNilai" class="w-full text-xs rounded-lg border border-slate-300 p-2 focus:ring-2 focus:ring-hospital-500">
                     </div>
                     <div>
-                        <label class="block font-semibold text-slate-700 mb-1">Capaian Display</label>
-                        <input type="text" id="modalCapaianDisplay" placeholder="cth: 100% atau 30 menit" class="w-full text-xs rounded-lg border border-slate-300 px-3 py-2 focus:ring-2 focus:ring-hospital-500">
+                        <label class="block font-semibold text-slate-600 mb-1">Capaian (Display)</label>
+                        <input type="text" id="modalCapaianDisplay" placeholder="cth: 100%" class="w-full text-xs rounded-lg border border-slate-300 p-2 focus:ring-2 focus:ring-hospital-500">
                     </div>
                 </div>
-
                 <div>
-                    <label class="block font-semibold text-slate-700 mb-1">Keterangan / Catatan</label>
-                    <textarea id="modalKeterangan" rows="2" class="w-full text-xs rounded-lg border border-slate-300 px-3 py-2 focus:ring-2 focus:ring-hospital-500" placeholder="Catatan khusus jika ada..."></textarea>
+                    <label class="block font-semibold text-slate-600 mb-1">Keterangan / Catatan Validasi</label>
+                    <textarea id="modalKeterangan" rows="2" placeholder="Catatan analisis atau validasi..." class="w-full text-xs rounded-lg border border-slate-300 p-2 focus:ring-2 focus:ring-hospital-500"></textarea>
                 </div>
             </div>
+            <div class="flex justify-end gap-2 pt-2 border-t border-slate-100">
+                <button onclick="closeEditModal()" class="px-4 py-2 rounded-lg text-slate-600 hover:bg-slate-100 text-xs font-semibold">Batal</button>
+                <button onclick="saveEditModalData()" class="px-5 py-2 rounded-lg bg-hospital-600 hover:bg-hospital-700 text-white text-xs font-bold shadow-sm">Simpan Perubahan</button>
+            </div>
+        </div>
+    </div>
 
-            <div class="bg-slate-50 px-6 py-3 border-t border-slate-200 flex justify-end gap-2">
-                <button onclick="closeEditModal()" class="px-4 py-2 rounded-lg text-slate-600 hover:bg-slate-200 font-medium text-xs">Batal</button>
-                <button onclick="saveEditModalData()" class="px-4 py-2 rounded-lg bg-hospital-600 hover:bg-hospital-700 text-white font-semibold text-xs flex items-center gap-1.5">
-                    <i class="fa-solid fa-floppy-disk"></i> Simpan
+    <!-- Modal Pratinjau & Fallback Cetak -->
+    <div id="printModal" class="fixed inset-0 z-50 bg-slate-900/70 backdrop-blur-sm flex items-center justify-center p-4 hidden no-print">
+        <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 max-w-4xl w-full max-h-[90vh] flex flex-col overflow-hidden">
+            <div class="bg-indigo-900 text-white px-6 py-4 flex items-center justify-between">
+                <h3 class="font-bold text-base flex items-center gap-2">
+                    <i class="fa-solid fa-print text-amber-400"></i>
+                    Pratinjau & Cetak Laporan Mutu
+                </h3>
+                <button onclick="closePrintModal()" class="text-white/70 hover:text-white text-lg">
+                    <i class="fa-solid fa-xmark"></i>
                 </button>
+            </div>
+            
+            <div class="p-6 overflow-y-auto custom-scrollbar flex-grow space-y-4 text-xs text-slate-800" id="printModalBody">
+                <!-- Content copied dynamically -->
+            </div>
+
+            <div class="bg-slate-100 px-6 py-3 border-t border-slate-200 flex items-center justify-between">
+                <span class="text-xs text-slate-500 font-medium">Jika dialog cetak otomatis tidak muncul, gunakan tombol cetak di sebelah kanan.</span>
+                <div class="flex gap-2">
+                    <button onclick="closePrintModal()" class="px-4 py-2 rounded-lg text-slate-600 hover:bg-slate-200 font-semibold text-xs">Tutup</button>
+                    <button onclick="triggerModalPrint()" class="px-5 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs flex items-center gap-2 shadow">
+                        <i class="fa-solid fa-print"></i> Cetak Sekarang / Window Baru
+                    </button>
+                </div>
             </div>
         </div>
     </div>
 
     <!-- Confirm Modal -->
-    <div id="confirmModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div id="confirmModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 hidden no-print">
         <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 max-w-md w-full p-6 space-y-4">
             <div class="flex items-center space-x-3 text-rose-600">
                 <i class="fa-solid fa-triangle-exclamation text-2xl"></i>
@@ -631,6 +683,12 @@
                 <button id="confirmModalActionBtn" onclick="closeConfirmModal(true)" class="px-4 py-2 rounded-lg bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold">Lanjutkan</button>
             </div>
         </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 flex items-center gap-3 bg-slate-900 text-white px-4 py-3 rounded-xl shadow-2xl border border-slate-700 pointer-events-none no-print">
+        <i id="toastIcon" class="fa-solid fa-circle-check text-emerald-400 text-lg"></i>
+        <span id="toastMessage" class="text-xs font-medium">Notifikasi</span>
     </div>
 
     <script>
@@ -885,13 +943,17 @@
 
             if (tabName === 'dashboard') renderDashboard();
             else if (tabName === 'input') loadInputFormData(currentSelectedMonth);
-            else if (tabName === 'trend') renderTrendChart();
+            else if (tabName === 'trend') {
+                populateTrendDropdown();
+                renderTrendChart();
+            }
             else if (tabName === 'rekap') renderRekapMatrix();
         }
 
         function handleMonthChange(monthKey) {
             currentSelectedMonth = monthKey;
-            document.getElementById('currentSelectedMonthTitle').innerText = MONTH_NAMES[monthKey] || monthKey;
+            const titleEl = document.getElementById('currentSelectedMonthTitle');
+            if (titleEl) titleEl.innerText = MONTH_NAMES[monthKey] || monthKey;
             
             const activeTabBtn = document.querySelector('.tab-btn.active');
             if (activeTabBtn) {
@@ -963,18 +1025,26 @@
         }
 
         function openLoginModal() {
-            document.getElementById('loginModal').classList.remove('hidden');
-            document.getElementById('loginPasswordInput').value = '';
-            document.getElementById('loginPasswordInput').focus();
+            const modal = document.getElementById('loginModal');
+            if (!modal) return;
+            modal.classList.remove('hidden');
+            const passInput = document.getElementById('loginPasswordInput');
+            if (passInput) {
+                passInput.value = '';
+                passInput.focus();
+            }
         }
 
         function closeLoginModal() {
-            document.getElementById('loginModal').classList.add('hidden');
+            const modal = document.getElementById('loginModal');
+            if (modal) modal.classList.add('hidden');
         }
 
         function handleLoginSubmit(event) {
-            event.preventDefault();
-            const password = document.getElementById('loginPasswordInput').value;
+            if (event) event.preventDefault();
+            const passInput = document.getElementById('loginPasswordInput');
+            if (!passInput) return;
+            const password = passInput.value;
             if (password === MASTER_PASSWORD) {
                 isAuthenticated = true;
                 closeLoginModal();
@@ -988,6 +1058,7 @@
         function togglePasswordVisibility() {
             const input = document.getElementById('loginPasswordInput');
             const icon = document.getElementById('eyeIcon');
+            if (!input || !icon) return;
             if (input.type === 'password') {
                 input.type = 'text';
                 icon.className = 'fa-solid fa-eye-slash';
@@ -1031,18 +1102,27 @@
             const evaluatedCount = countTercapai + countTidakTercapai;
             const compliancePercentage = evaluatedCount > 0 ? ((countTercapai / evaluatedCount) * 100).toFixed(1) : "0.0";
 
-            document.getElementById('kpi-total-unit').innerText = unitsSet.size;
-            document.getElementById('kpi-total-indikator').innerText = totalIndikator;
-            document.getElementById('kpi-tercapai').innerText = countTercapai;
-            document.getElementById('kpi-tidak-tercapai').innerText = countTidakTercapai;
-            document.getElementById('kpi-belum-ada-data').innerText = countBelumAdaData;
-            document.getElementById('kpi-validasi-info').innerText = countValidasiInfo;
+            const elTotalUnit = document.getElementById('kpi-total-unit');
+            const elTotalInd = document.getElementById('kpi-total-indikator');
+            const elTercapai = document.getElementById('kpi-tercapai');
+            const elTidakTercapai = document.getElementById('kpi-tidak-tercapai');
+            const elBelumAdaData = document.getElementById('kpi-belum-ada-data');
+            const elValidasiInfo = document.getElementById('kpi-validasi-info');
+
+            if (elTotalUnit) elTotalUnit.innerText = unitsSet.size;
+            if (elTotalInd) elTotalInd.innerText = totalIndikator;
+            if (elTercapai) elTercapai.innerText = countTercapai;
+            if (elTidakTercapai) elTidakTercapai.innerText = countTidakTercapai;
+            if (elBelumAdaData) elBelumAdaData.innerText = countBelumAdaData;
+            if (elValidasiInfo) elValidasiInfo.innerText = countValidasiInfo;
 
             const badge = document.getElementById('compliancePercentageBadge');
-            badge.innerText = `Kepatuhan Mutu Evaluasi: ${compliancePercentage}%`;
-            badge.className = `px-3 py-1 rounded-full text-xs font-bold border ${
-                parseFloat(compliancePercentage) >= 80 ? 'bg-emerald-100 text-emerald-800 border-emerald-300' : 'bg-rose-100 text-rose-800 border-rose-300'
-            }`;
+            if (badge) {
+                badge.innerText = `Kepatuhan Mutu Evaluasi: ${compliancePercentage}%`;
+                badge.className = `px-3 py-1 rounded-full text-xs font-bold border ${
+                    parseFloat(compliancePercentage) >= 80 ? 'bg-emerald-100 text-emerald-800 border-emerald-300' : 'bg-rose-100 text-rose-800 border-rose-300'
+                }`;
+            }
 
             renderDonutChart(countTercapai, countTidakTercapai, countBelumAdaData, countValidasiInfo);
             renderBarChart(unitCounts);
@@ -1050,13 +1130,20 @@
         }
 
         function applyFilters() {
-            const search = document.getElementById('filterSearch').value.toLowerCase();
-            const unit = document.getElementById('filterUnit').value;
-            const status = document.getElementById('filterStatus').value;
-            const kode = document.getElementById('filterKode').value;
+            const searchEl = document.getElementById('filterSearch');
+            const unitEl = document.getElementById('filterUnit');
+            const statusEl = document.getElementById('filterStatus');
+            const kodeEl = document.getElementById('filterKode');
+            const tbody = document.getElementById('dashboardTableBody');
+
+            if (!tbody) return;
+
+            const search = searchEl ? searchEl.value.toLowerCase() : '';
+            const unit = unitEl ? unitEl.value : '';
+            const status = statusEl ? statusEl.value : '';
+            const kode = kodeEl ? kodeEl.value : '';
 
             const currentMonthData = getPeriodData(currentSelectedMonth);
-            const tbody = document.getElementById('dashboardTableBody');
             tbody.innerHTML = '';
 
             let matchedCount = 0;
@@ -1099,19 +1186,27 @@
                 tbody.appendChild(tr);
             });
 
-            document.getElementById('rowCountBadge').innerText = `${matchedCount} Indikator Ditampilkan`;
+            const countBadge = document.getElementById('rowCountBadge');
+            if (countBadge) countBadge.innerText = `${matchedCount} Indikator Ditampilkan`;
         }
 
         function resetFilters() {
-            document.getElementById('filterSearch').value = '';
-            document.getElementById('filterUnit').value = '';
-            document.getElementById('filterStatus').value = '';
-            document.getElementById('filterKode').value = '';
+            const searchEl = document.getElementById('filterSearch');
+            const unitEl = document.getElementById('filterUnit');
+            const statusEl = document.getElementById('filterStatus');
+            const kodeEl = document.getElementById('filterKode');
+
+            if (searchEl) searchEl.value = '';
+            if (unitEl) unitEl.value = '';
+            if (statusEl) statusEl.value = '';
+            if (kodeEl) kodeEl.value = '';
             applyFilters();
         }
 
         function renderDonutChart(tercapai, tidakTercapai, belumData, validasiInfo) {
-            const ctx = document.getElementById('donutStatusChart').getContext('2d');
+            const canvas = document.getElementById('donutStatusChart');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
             if (donutChartInstance) donutChartInstance.destroy();
 
             donutChartInstance = new Chart(ctx, {
@@ -1137,7 +1232,9 @@
         }
 
         function renderBarChart(unitCounts) {
-            const ctx = document.getElementById('barUnitChart').getContext('2d');
+            const canvas = document.getElementById('barUnitChart');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
             if (barChartInstance) barChartInstance.destroy();
 
             const labels = Object.keys(unitCounts);
@@ -1166,109 +1263,123 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    scales: {
-                        y: { beginAtZero: true, ticks: { precision: 0 } },
-                        x: { ticks: { font: { family: 'Inter', size: 10 } } }
-                    },
                     plugins: {
                         legend: { position: 'top', labels: { font: { family: 'Inter', size: 11 } } }
+                    },
+                    scales: {
+                        y: { beginAtZero: true, ticks: { precision: 0 } }
                     }
                 }
             });
         }
 
         function loadInputFormData(monthKey) {
-            if (monthKey.includes('TW') || monthKey === '2026-YEAR') {
-                showToast("Form input khusus untuk data bulanan. Mengalihkan ke bulan April 2026.", "info");
-                monthKey = "2026-04";
-                document.getElementById('globalMonthSelect').value = monthKey;
-            }
-
-            currentSelectedMonth = monthKey;
-            document.getElementById('inputMonthTitle').innerText = MONTH_NAMES[monthKey] || monthKey;
+            const titleEl = document.getElementById('inputMonthTitle');
+            if (titleEl) titleEl.innerText = MONTH_NAMES[monthKey] || monthKey;
 
             const tbody = document.getElementById('inputFormTableBody');
+            if (!tbody) return;
+
             tbody.innerHTML = '';
+            const mData = appState.monthlyData[monthKey] || {};
 
-            const monthData = appState.monthlyData[monthKey] || {};
-            const isDisabled = !isAuthenticated;
+            appState.master.forEach(ind => {
+                const itemData = mData[ind.id] || {};
+                const evalStatus = evaluateStatus(ind, itemData);
 
-            appState.master.forEach((ind) => {
-                const data = monthData[ind.id] || {};
-                const evalStatus = evaluateStatus(ind, data);
+                const numVal = itemData.numerator !== undefined && itemData.numerator !== null ? itemData.numerator : '';
+                const denVal = itemData.denominator !== undefined && itemData.denominator !== null ? itemData.denominator : '';
+                const capNilaiVal = itemData.capaian_nilai !== undefined && itemData.capaian_nilai !== null ? itemData.capaian_nilai : '';
+                const capDispVal = itemData.capaian_display !== undefined && itemData.capaian_display !== null ? itemData.capaian_display : '';
+                const ketVal = itemData.keterangan || '';
 
                 const tr = document.createElement('tr');
-                tr.className = `hover:bg-slate-50 border-b border-slate-200 ${isDisabled ? 'bg-slate-50/50' : ''}`;
+                tr.className = "hover:bg-slate-50 border-b border-slate-200 transition";
                 tr.innerHTML = `
-                    <td class="p-2.5 text-center font-bold text-slate-500 border-r border-slate-200">${ind.id}</td>
-                    <td class="p-2.5 font-semibold text-slate-800 border-r border-slate-200 text-xs">${ind.unit}</td>
-                    <td class="p-2.5 border-r border-slate-200">
+                    <td class="py-2.5 px-2 text-center font-medium text-slate-500">${ind.id}</td>
+                    <td class="py-2.5 px-3 font-semibold text-slate-800">${ind.unit}</td>
+                    <td class="py-2.5 px-4">
                         <div class="font-medium text-slate-800">${ind.indikator}</div>
-                        <div class="text-[10px] text-slate-500 mt-0.5">Kode: ${ind.kode} | Standar: <span class="font-semibold text-slate-700">${ind.standar || 'Baku Mutu'}</span></div>
+                        <div class="text-[11px] text-slate-500 mt-0.5"><span class="font-bold text-hospital-700">${ind.kode}</span> | Standar: <span class="font-semibold">${ind.standar || '-'}</span></div>
                     </td>
-                    <td class="p-2 border-r border-slate-200">
-                        <input type="number" step="any" id="input-num-${ind.id}" ${isDisabled ? 'disabled' : ''} value="${data.numerator !== null && data.numerator !== undefined ? data.numerator : ''}" oninput="autoCalculateRow(${ind.id})" class="w-full text-xs text-center border border-slate-300 rounded p-1.5 focus:ring-2 focus:ring-hospital-500 ${isDisabled ? 'bg-slate-100 cursor-not-allowed' : ''}">
+                    <td class="py-2.5 px-2 text-center">
+                        <input type="number" step="any" data-id="${ind.id}" data-field="numerator" value="${numVal}" oninput="autoCalculateRow(${ind.id})" ${!isAuthenticated ? 'disabled' : ''} placeholder="N" class="w-20 text-xs text-center border border-slate-300 rounded p-1.5 focus:ring-2 focus:ring-hospital-500 disabled:bg-slate-100">
                     </td>
-                    <td class="p-2 border-r border-slate-200">
-                        <input type="number" step="any" id="input-den-${ind.id}" ${isDisabled ? 'disabled' : ''} value="${data.denominator !== null && data.denominator !== undefined ? data.denominator : ''}" oninput="autoCalculateRow(${ind.id})" class="w-full text-xs text-center border border-slate-300 rounded p-1.5 focus:ring-2 focus:ring-hospital-500 ${isDisabled ? 'bg-slate-100 cursor-not-allowed' : ''}">
+                    <td class="py-2.5 px-2 text-center">
+                        <input type="number" step="any" data-id="${ind.id}" data-field="denominator" value="${denVal}" oninput="autoCalculateRow(${ind.id})" ${!isAuthenticated ? 'disabled' : ''} placeholder="D" class="w-20 text-xs text-center border border-slate-300 rounded p-1.5 focus:ring-2 focus:ring-hospital-500 disabled:bg-slate-100">
                     </td>
-                    <td class="p-2 border-r border-slate-200">
-                        <input type="number" step="any" id="input-val-${ind.id}" ${isDisabled ? 'disabled' : ''} value="${data.capaian_nilai !== null && data.capaian_nilai !== undefined ? data.capaian_nilai : ''}" oninput="updateRowStatusBadge(${ind.id})" class="w-full text-xs text-center font-bold border border-slate-300 rounded p-1.5 focus:ring-2 focus:ring-hospital-500 ${isDisabled ? 'bg-slate-100 cursor-not-allowed' : ''}">
+                    <td class="py-2.5 px-2 text-center">
+                        <input type="number" step="any" data-id="${ind.id}" data-field="capaian_nilai" value="${capNilaiVal}" oninput="updateRowStatusBadge(${ind.id})" ${!isAuthenticated ? 'disabled' : ''} placeholder="Angka" class="w-20 text-xs text-center font-bold border border-slate-300 rounded p-1.5 focus:ring-2 focus:ring-hospital-500 disabled:bg-slate-100">
                     </td>
-                    <td class="p-2 border-r border-slate-200">
-                        <input type="text" id="input-disp-${ind.id}" ${isDisabled ? 'disabled' : ''} value="${data.capaian_display || ''}" placeholder="cth: 100%" class="w-full text-xs text-center font-semibold border border-slate-300 rounded p-1.5 focus:ring-2 focus:ring-hospital-500 ${isDisabled ? 'bg-slate-100 cursor-not-allowed' : ''}">
+                    <td class="py-2.5 px-2 text-center">
+                        <input type="text" data-id="${ind.id}" data-field="capaian_display" value="${capDispVal}" ${!isAuthenticated ? 'disabled' : ''} placeholder="Display" class="w-24 text-xs text-center border border-slate-300 rounded p-1.5 focus:ring-2 focus:ring-hospital-500 disabled:bg-slate-100">
                     </td>
-                    <td class="p-2 text-center border-r border-slate-200" id="input-status-cell-${ind.id}">
-                        <span class="px-2 py-0.5 rounded text-[10px] ${evalStatus.bg}">${evalStatus.label}</span>
+                    <td class="py-2.5 px-2 text-center" id="inputStatusBadgeContainer-${ind.id}">
+                        <span class="px-2 py-1 rounded text-[10px] ${evalStatus.bg}">${evalStatus.label}</span>
                     </td>
-                    <td class="p-2">
-                        <input type="text" id="input-ket-${ind.id}" ${isDisabled ? 'disabled' : ''} value="${data.keterangan || ''}" placeholder="Catatan..." class="w-full text-xs border border-slate-300 rounded p-1.5 focus:ring-2 focus:ring-hospital-500 ${isDisabled ? 'bg-slate-100 cursor-not-allowed' : ''}">
+                    <td class="py-2.5 px-3">
+                        <input type="text" data-id="${ind.id}" data-field="keterangan" value="${ketVal}" ${!isAuthenticated ? 'disabled' : ''} placeholder="Catatan..." class="w-full text-xs border border-slate-300 rounded p-1.5 focus:ring-2 focus:ring-hospital-500 disabled:bg-slate-100">
                     </td>
                 `;
                 tbody.appendChild(tr);
             });
         }
 
-        function autoCalculateRow(id) {
-            const ind = appState.master.find(i => i.id === id);
-            const numInput = document.getElementById(`input-num-${id}`);
-            const denInput = document.getElementById(`input-den-${id}`);
-            const valInput = document.getElementById(`input-val-${id}`);
-            const dispInput = document.getElementById(`input-disp-${id}`);
+        function autoCalculateRow(indId) {
+            const ind = appState.master.find(i => i.id === indId);
+            if (!ind) return;
+
+            const numInput = document.querySelector(`input[data-id="${indId}"][data-field="numerator"]`);
+            const denInput = document.querySelector(`input[data-id="${indId}"][data-field="denominator"]`);
+            const valInput = document.querySelector(`input[data-id="${indId}"][data-field="capaian_nilai"]`);
+            const dispInput = document.querySelector(`input[data-id="${indId}"][data-field="capaian_display"]`);
+
+            if (!numInput || !denInput || !valInput || !dispInput) return;
 
             const num = parseFloat(numInput.value);
             const den = parseFloat(denInput.value);
 
             if (!isNaN(num) && !isNaN(den) && den > 0) {
+                let calcVal = 0;
+                let calcDisp = '';
+
                 if (ind.satuan === '%') {
-                    const pct = Math.round(((num / den) * 100) * 100) / 100;
-                    valInput.value = pct;
-                    dispInput.value = `${pct}%`;
+                    calcVal = Math.round(((num / den) * 100) * 100) / 100;
+                    calcDisp = `${calcVal}%`;
                 } else if (ind.satuan === 'menit') {
-                    const min = Math.round((num / den) * 100) / 100;
-                    valInput.value = min;
-                    dispInput.value = `${min} menit`;
+                    calcVal = Math.round((num / den) * 100) / 100;
+                    calcDisp = `${calcVal} menit`;
+                } else {
+                    calcVal = Math.round((num / den) * 100) / 100;
+                    calcDisp = `${calcVal} ${ind.satuan || ''}`.trim();
                 }
+
+                valInput.value = calcVal;
+                dispInput.value = calcDisp;
             }
-            updateRowStatusBadge(id);
+
+            updateRowStatusBadge(indId);
         }
 
-        function updateRowStatusBadge(id) {
-            const ind = appState.master.find(i => i.id === id);
-            const valInput = document.getElementById(`input-val-${id}`);
-            const dispInput = document.getElementById(`input-disp-${id}`);
-            const ketInput = document.getElementById(`input-ket-${id}`);
-            const cell = document.getElementById(`input-status-cell-${id}`);
+        function updateRowStatusBadge(indId) {
+            const ind = appState.master.find(i => i.id === indId);
+            if (!ind) return;
 
-            const val = valInput.value !== '' ? parseFloat(valInput.value) : null;
-            const dataObj = {
-                capaian_nilai: val,
-                capaian_display: dispInput.value || '-',
-                keterangan: ketInput.value || ''
+            const valInput = document.querySelector(`input[data-id="${indId}"][data-field="capaian_nilai"]`);
+            const dispInput = document.querySelector(`input[data-id="${indId}"][data-field="capaian_display"]`);
+            const ketInput = document.querySelector(`input[data-id="${indId}"][data-field="keterangan"]`);
+
+            const mockData = {
+                capaian_nilai: valInput && valInput.value !== '' ? parseFloat(valInput.value) : null,
+                capaian_display: dispInput ? dispInput.value : '-',
+                keterangan: ketInput ? ketInput.value : ''
             };
 
-            const status = evaluateStatus(ind, dataObj);
-            cell.innerHTML = `<span class="px-2 py-0.5 rounded text-[10px] ${status.bg}">${status.label}</span>`;
+            const status = evaluateStatus(ind, mockData);
+            const container = document.getElementById(`inputStatusBadgeContainer-${indId}`);
+            if (container) {
+                container.innerHTML = `<span class="px-2 py-1 rounded text-[10px] ${status.bg}">${status.label}</span>`;
+            }
         }
 
         function saveInputForm() {
@@ -1277,31 +1388,37 @@
                 return;
             }
 
-            const monthData = appState.monthlyData[currentSelectedMonth] || {};
-
+            const monthData = {};
             appState.master.forEach(ind => {
-                const numVal = document.getElementById(`input-num-${ind.id}`).value;
-                const denVal = document.getElementById(`input-den-${ind.id}`).value;
-                const valVal = document.getElementById(`input-val-${ind.id}`).value;
-                const dispVal = document.getElementById(`input-disp-${ind.id}`).value;
-                const ketVal = document.getElementById(`input-ket-${ind.id}`).value;
+                const numInput = document.querySelector(`input[data-id="${ind.id}"][data-field="numerator"]`);
+                const denInput = document.querySelector(`input[data-id="${ind.id}"][data-field="denominator"]`);
+                const valInput = document.querySelector(`input[data-id="${ind.id}"][data-field="capaian_nilai"]`);
+                const dispInput = document.querySelector(`input[data-id="${ind.id}"][data-field="capaian_display"]`);
+                const ketInput = document.querySelector(`input[data-id="${ind.id}"][data-field="keterangan"]`);
+
+                const num = numInput && numInput.value !== '' ? parseFloat(numInput.value) : null;
+                const den = denInput && denInput.value !== '' ? parseFloat(denInput.value) : null;
+                const val = valInput && valInput.value !== '' ? parseFloat(valInput.value) : null;
+                const disp = dispInput && dispInput.value !== '' ? dispInput.value : '-';
+                const ket = ketInput ? ketInput.value : '';
 
                 monthData[ind.id] = {
-                    numerator: numVal !== '' ? parseFloat(numVal) : null,
-                    denominator: denVal !== '' ? parseFloat(denVal) : null,
-                    capaian_nilai: valVal !== '' ? parseFloat(valVal) : null,
-                    capaian_display: dispVal || '-',
-                    keterangan: ketVal || ''
+                    numerator: num,
+                    denominator: den,
+                    capaian_nilai: val,
+                    capaian_display: disp,
+                    keterangan: ket
                 };
             });
 
             appState.monthlyData[currentSelectedMonth] = monthData;
             saveStorageState();
-            showToast(`Data mutu ${MONTH_NAMES[currentSelectedMonth]} berhasil disimpan!`, "success");
+            showToast(`Data untuk ${MONTH_NAMES[currentSelectedMonth] || currentSelectedMonth} berhasil disimpan!`, "success");
         }
 
         function populateTrendDropdown() {
             const select = document.getElementById('trendIndicatorSelect');
+            if (!select) return;
             select.innerHTML = '';
             appState.master.forEach(ind => {
                 const opt = document.createElement('option');
@@ -1312,393 +1429,496 @@
         }
 
         function renderTrendChart() {
-            const indId = parseInt(document.getElementById('trendIndicatorSelect').value) || 1;
+            const select = document.getElementById('trendIndicatorSelect');
+            if (!select) return;
+            const indId = parseInt(select.value) || 1;
             const ind = appState.master.find(i => i.id === indId);
-            const months = ["2026-01", "2026-02", "2026-03", "2026-04", "2026-05", "2026-06", "2026-07", "2026-08", "2026-09", "2026-10", "2026-11", "2026-12"];
-            const monthLabels = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
+            if (!ind) return;
 
-            const metaBox = document.getElementById('trendIndicatorMeta');
-            metaBox.innerHTML = `
-                <div><span class="font-bold">Unit:</span> ${ind.unit} | <span class="font-bold">Kode:</span> ${ind.kode}</div>
-                <div><span class="font-bold">Standar Target:</span> ${ind.standar || 'Informasi / Baku Mutu'}</div>
-            `;
+            const metaContainer = document.getElementById('trendIndicatorMeta');
+            if (metaContainer) {
+                metaContainer.innerHTML = `
+                    <div><strong>Unit:</strong> ${ind.unit}</div>
+                    <div><strong>Kode:</strong> ${ind.kode}</div>
+                    <div><strong>Standar:</strong> ${ind.standar || 'N/A'}</div>
+                    <div><strong>Target:</strong> ${ind.target !== null ? ind.target + (ind.satuan || '') : 'N/A'}</div>
+                `;
+            }
 
-            const dataPoints = [];
-            const tableBody = document.getElementById('trendMonthlyTableBody');
-
-            let trNumHtml = `<tr><td class="p-2 font-bold border border-slate-200 text-left bg-slate-50">Numerator (N)</td>`;
-            let trDenHtml = `<tr><td class="p-2 font-bold border border-slate-200 text-left bg-slate-50">Denominator (D)</td>`;
-            let trValHtml = `<tr><td class="p-2 font-bold border border-slate-200 text-left bg-slate-50">Capaian</td>`;
-            let trStHtml  = `<tr><td class="p-2 font-bold border border-slate-200 text-left bg-slate-50">Status</td>`;
+            const months = ['2026-01', '2026-02', '2026-03', '2026-04', '2026-05', '2026-06', '2026-07', '2026-08', '2026-09', '2026-10', '2026-11', '2026-12'];
+            const labels = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+            const trendData = [];
 
             months.forEach(m => {
-                const mData = (appState.monthlyData[m] || {})[ind.id] || {};
-                const val = mData.capaian_nilai !== undefined ? mData.capaian_nilai : null;
-                dataPoints.push(val);
-
-                const evalSt = evaluateStatus(ind, mData);
-
-                trNumHtml += `<td class="p-2 border border-slate-200">${mData.numerator !== null && mData.numerator !== undefined ? mData.numerator : '-'}</td>`;
-                trDenHtml += `<td class="p-2 border border-slate-200">${mData.denominator !== null && mData.denominator !== undefined ? mData.denominator : '-'}</td>`;
-                trValHtml += `<td class="p-2 border border-slate-200 font-bold">${mData.capaian_display || '-'}</td>`;
-                trStHtml  += `<td class="p-2 border border-slate-200"><span class="px-1.5 py-0.5 rounded text-[10px] ${evalSt.bg}">${evalSt.label}</span></td>`;
+                const item = (appState.monthlyData[m] || {})[ind.id];
+                trendData.push(item && item.capaian_nilai !== null && item.capaian_nilai !== undefined ? item.capaian_nilai : null);
             });
 
-            trNumHtml += `</tr>`;
-            trDenHtml += `</tr>`;
-            trValHtml += `</tr>`;
-            trStHtml  += `</tr>`;
-
-            tableBody.innerHTML = trNumHtml + trDenHtml + trValHtml + trStHtml;
-
-            const ctx = document.getElementById('lineTrendChart').getContext('2d');
+            const canvas = document.getElementById('lineTrendChart');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
             if (lineChartInstance) lineChartInstance.destroy();
 
             lineChartInstance = new Chart(ctx, {
                 type: 'line',
                 data: {
-                    labels: monthLabels,
+                    labels: labels,
                     datasets: [{
-                        label: `Capaian (${ind.satuan || 'Nilai'})`,
-                        data: dataPoints,
+                        label: ind.indikator,
+                        data: trendData,
                         borderColor: '#0284c7',
                         backgroundColor: 'rgba(2, 132, 199, 0.1)',
-                        borderWidth: 3,
                         fill: true,
                         tension: 0.3,
-                        pointBackgroundColor: '#0369a1',
-                        pointRadius: 5
+                        pointRadius: 5,
+                        pointHoverRadius: 7
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
                     scales: {
                         y: { beginAtZero: false }
-                    },
-                    plugins: {
-                        legend: { position: 'top' }
                     }
                 }
             });
+
+            // Populate summary snapshot table
+            const snapshotBody = document.getElementById('trendMonthlyTableBody');
+            if (snapshotBody) {
+                snapshotBody.innerHTML = '';
+                const trVal = document.createElement('tr');
+                trVal.className = "hover:bg-slate-50";
+                let tds = `<td class="py-2.5 px-3 text-left font-bold text-slate-800">Capaian Nilai</td>`;
+                months.forEach(m => {
+                    const item = (appState.monthlyData[m] || {})[ind.id];
+                    tds += `<td class="py-2.5 px-2 font-semibold text-slate-700">${item && item.capaian_display ? item.capaian_display : '-'}</td>`;
+                });
+                trVal.innerHTML = tds;
+                snapshotBody.appendChild(trVal);
+            }
         }
 
         function toggleHeatmapMode(mode) {
             heatmapDisplayMode = mode;
-            const monthlyBtn = document.getElementById('heatmapModeMonthlyBtn');
-            const quarterlyBtn = document.getElementById('heatmapModeQuarterlyBtn');
+            const btnMonthly = document.getElementById('heatmapModeMonthlyBtn');
+            const btnQuarterly = document.getElementById('heatmapModeQuarterlyBtn');
 
             if (mode === 'monthly') {
-                monthlyBtn.className = "px-3 py-1.5 rounded-md bg-white text-hospital-700 shadow-sm transition font-bold";
-                quarterlyBtn.className = "px-3 py-1.5 rounded-md text-slate-600 hover:text-slate-900 transition";
+                if (btnMonthly) btnMonthly.className = "px-3 py-1.5 rounded-md bg-white text-hospital-700 shadow-sm transition font-bold";
+                if (btnQuarterly) btnQuarterly.className = "px-3 py-1.5 rounded-md text-slate-600 hover:text-slate-900 transition";
             } else {
-                quarterlyBtn.className = "px-3 py-1.5 rounded-md bg-white text-hospital-700 shadow-sm transition font-bold";
-                monthlyBtn.className = "px-3 py-1.5 rounded-md text-slate-600 hover:text-slate-900 transition";
+                if (btnMonthly) btnMonthly.className = "px-3 py-1.5 rounded-md text-slate-600 hover:text-slate-900 transition";
+                if (btnQuarterly) btnQuarterly.className = "px-3 py-1.5 rounded-md bg-white text-hospital-700 shadow-sm transition font-bold";
             }
             renderRekapMatrix();
         }
 
         function renderRekapMatrix() {
-            const units = Array.from(new Set(appState.master.map(i => i.unit)));
-            const thead = document.getElementById('rekapHeatmapTableHead');
-            const tbody = document.getElementById('rekapHeatmapTableBody');
-            
-            thead.innerHTML = '';
-            tbody.innerHTML = '';
+            const head = document.getElementById('rekapHeatmapTableHead');
+            const body = document.getElementById('rekapHeatmapTableBody');
+            const grid = document.getElementById('unitPerformanceCardsGrid');
+            if (!head || !body) return;
 
-            document.getElementById('rekapActivePeriodTitle').innerText = MONTH_NAMES[currentSelectedMonth] || 'Bulan Terpilih';
+            const units = Array.from(new Set(appState.master.map(i => i.unit)));
 
             if (heatmapDisplayMode === 'monthly') {
-                const months = ["2026-01", "2026-02", "2026-03", "2026-04", "2026-05", "2026-06", "2026-07", "2026-08", "2026-09", "2026-10", "2026-11", "2026-12"];
-                
-                thead.innerHTML = `
-                    <tr>
-                        <th class="p-3 text-left w-56 border border-slate-700">Unit Pelayanan Penunjang</th>
-                        <th class="p-3 border border-slate-700 w-12">Total Indikator</th>
-                        <th class="p-2 border border-slate-700">Jan</th>
-                        <th class="p-2 border border-slate-700">Feb</th>
-                        <th class="p-2 border border-slate-700">Mar</th>
-                        <th class="p-2 border border-slate-700">Apr</th>
-                        <th class="p-2 border border-slate-700">Mei</th>
-                        <th class="p-2 border border-slate-700">Jun</th>
-                        <th class="p-2 border border-slate-700">Jul</th>
-                        <th class="p-2 border border-slate-700">Agu</th>
-                        <th class="p-2 border border-slate-700">Sep</th>
-                        <th class="p-2 border border-slate-700">Okt</th>
-                        <th class="p-2 border border-slate-700">Nov</th>
-                        <th class="p-2 border border-slate-700">Des</th>
-                        <th class="p-3 border border-slate-700 w-20 bg-hospital-900">Rata-rata</th>
-                    </tr>
-                `;
+                const months = ['2026-01', '2026-02', '2026-03', '2026-04', '2026-05', '2026-06', '2026-07', '2026-08', '2026-09', '2026-10', '2026-11', '2026-12'];
+                const monthShorts = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
 
-                units.forEach(unitName => {
-                    const unitIndicators = appState.master.filter(i => i.unit === unitName);
-                    const totalInd = unitIndicators.length;
+                let ths = `<tr><th class="py-3 px-3 text-left w-44">Unit Pelayanan</th>`;
+                monthShorts.forEach(m => ths += `<th class="py-3 px-2">${m}</th>`);
+                ths += `<th class="py-3 px-3">Rata-rata</th></tr>`;
+                head.innerHTML = ths;
 
-                    let trHtml = `<tr>
-                        <td class="p-3 text-left font-bold text-slate-800 border border-slate-200 bg-slate-50">${unitName}</td>
-                        <td class="p-2 font-bold text-slate-600 border border-slate-200">${totalInd}</td>`;
+                body.innerHTML = '';
+                units.forEach(u => {
+                    const unitInds = appState.master.filter(i => i.unit === u);
+                    let tr = document.createElement('tr');
+                    tr.className = "hover:bg-slate-50 border-b border-slate-200";
+                    let tds = `<td class="py-3 px-3 text-left font-bold text-slate-800">${u}</td>`;
 
-                    let overallAchievedSum = 0;
-                    let overallEvaluatedSum = 0;
+                    let totalScore = 0;
+                    let validMonthsCount = 0;
 
-                    months.forEach(mKey => {
-                        const mData = appState.monthlyData[mKey] || {};
-                        let monthAchieved = 0;
-                        let monthEvaluated = 0;
+                    months.forEach(m => {
+                        const mData = appState.monthlyData[m] || {};
+                        let achieved = 0;
+                        let evaluated = 0;
 
-                        unitIndicators.forEach(ind => {
-                            const st = evaluateStatus(ind, mData[ind.id]);
-                            if (st.code === 'ACHIEVED') {
-                                monthAchieved++;
-                                monthEvaluated++;
-                            } else if (st.code === 'NOT_ACHIEVED') {
-                                monthEvaluated++;
-                            }
+                        unitInds.forEach(ind => {
+                            const d = mData[ind.id];
+                            const st = evaluateStatus(ind, d);
+                            if (st.code === 'ACHIEVED') { achieved++; evaluated++; }
+                            else if (st.code === 'NOT_ACHIEVED') { evaluated++; }
                         });
 
-                        if (monthEvaluated > 0) {
-                            const pct = (monthAchieved / monthEvaluated) * 100;
-                            overallAchievedSum += monthAchieved;
-                            overallEvaluatedSum += monthEvaluated;
-
-                            let bgClass = "bg-rose-100 text-rose-800 font-bold";
-                            if (pct === 100) bgClass = "bg-emerald-600 text-white font-extrabold";
-                            else if (pct >= 80) bgClass = "bg-emerald-100 text-emerald-800 font-bold";
-                            else if (pct >= 50) bgClass = "bg-amber-100 text-amber-800 font-bold";
-
-                            trHtml += `<td class="p-2 border border-slate-200 ${bgClass}">${Math.round(pct)}%</td>`;
+                        if (evaluated > 0) {
+                            const pct = Math.round((achieved / evaluated) * 100);
+                            totalScore += pct;
+                            validMonthsCount++;
+                            const colorClass = pct >= 80 ? 'bg-emerald-100 text-emerald-800 border-emerald-300 font-bold' : 'bg-rose-100 text-rose-800 border-rose-300 font-bold';
+                            tds += `<td class="py-2 px-1"><span class="px-2 py-1 rounded border text-[11px] block ${colorClass}">${pct}%</span></td>`;
                         } else {
-                            trHtml += `<td class="p-2 border border-slate-200 bg-slate-100 text-slate-400">-</td>`;
+                            tds += `<td class="py-2 px-1"><span class="px-2 py-1 rounded bg-slate-100 text-slate-400 text-[11px] block">-</span></td>`;
                         }
                     });
 
-                    const overallPct = overallEvaluatedSum > 0 ? Math.round((overallAchievedSum / overallEvaluatedSum) * 100) : '-';
-                    const avgBg = typeof overallPct === 'number' ? (overallPct >= 80 ? 'bg-emerald-600 text-white' : 'bg-rose-600 text-white') : 'bg-slate-200 text-slate-600';
-                    trHtml += `<td class="p-3 border border-slate-200 font-extrabold ${avgBg}">${overallPct !== '-' ? overallPct + '%' : '-'}</td></tr>`;
-
-                    tbody.innerHTML += trHtml;
+                    const avgPct = validMonthsCount > 0 ? Math.round(totalScore / validMonthsCount) : '-';
+                    tds += `<td class="py-3 px-3 font-extrabold text-slate-900">${avgPct !== '-' ? avgPct + '%' : '-'}</td>`;
+                    tr.innerHTML = tds;
+                    body.appendChild(tr);
                 });
             } else {
-                const periods = ["2026-TW1", "2026-TW2", "2026-TW3", "2026-TW4", "2026-YEAR"];
+                const periods = ['2026-TW1', '2026-TW2', '2026-TW3', '2026-TW4', '2026-YEAR'];
+                const periodLabels = ['TW1 (Jan-Mar)', 'TW2 (Apr-Jun)', 'TW3 (Jul-Sep)', 'TW4 (Okt-Des)', 'Tahun 2026'];
 
-                thead.innerHTML = `
-                    <tr>
-                        <th class="p-3 text-left w-56 border border-slate-700">Unit Pelayanan Penunjang</th>
-                        <th class="p-3 border border-slate-700 w-12">Total Indikator</th>
-                        <th class="p-3 border border-slate-700 bg-sky-900">Triwulan 1 (Jan–Mar)</th>
-                        <th class="p-3 border border-slate-700 bg-sky-900">Triwulan 2 (Apr–Jun)</th>
-                        <th class="p-3 border border-slate-700 bg-sky-900">Triwulan 3 (Jul–Sep)</th>
-                        <th class="p-3 border border-slate-700 bg-sky-900">Triwulan 4 (Okt–Des)</th>
-                        <th class="p-3 border border-slate-700 bg-hospital-900">Tahun 2026 (Full)</th>
-                    </tr>
-                `;
+                let ths = `<tr><th class="py-3 px-3 text-left w-44">Unit Pelayanan</th>`;
+                periodLabels.forEach(p => ths += `<th class="py-3 px-3">${p}</th>`);
+                ths += `</tr>`;
+                head.innerHTML = ths;
 
-                units.forEach(unitName => {
-                    const unitIndicators = appState.master.filter(i => i.unit === unitName);
-                    const totalInd = unitIndicators.length;
+                body.innerHTML = '';
+                units.forEach(u => {
+                    const unitInds = appState.master.filter(i => i.unit === u);
+                    let tr = document.createElement('tr');
+                    tr.className = "hover:bg-slate-50 border-b border-slate-200";
+                    let tds = `<td class="py-3 px-3 text-left font-bold text-slate-800">${u}</td>`;
 
-                    let trHtml = `<tr>
-                        <td class="p-3 text-left font-bold text-slate-800 border border-slate-200 bg-slate-50">${unitName}</td>
-                        <td class="p-2 font-bold text-slate-600 border border-slate-200">${totalInd}</td>`;
+                    periods.forEach(p => {
+                        const pData = getPeriodData(p);
+                        let achieved = 0;
+                        let evaluated = 0;
 
-                    periods.forEach(pKey => {
-                        const pData = getPeriodData(pKey);
-                        let pAchieved = 0;
-                        let pEvaluated = 0;
-
-                        unitIndicators.forEach(ind => {
-                            const st = evaluateStatus(ind, pData[ind.id]);
-                            if (st.code === 'ACHIEVED') {
-                                pAchieved++;
-                                pEvaluated++;
-                            } else if (st.code === 'NOT_ACHIEVED') {
-                                pEvaluated++;
-                            }
+                        unitInds.forEach(ind => {
+                            const d = pData[ind.id];
+                            const st = evaluateStatus(ind, d);
+                            if (st.code === 'ACHIEVED') { achieved++; evaluated++; }
+                            else if (st.code === 'NOT_ACHIEVED') { evaluated++; }
                         });
 
-                        if (pEvaluated > 0) {
-                            const pct = Math.round((pAchieved / pEvaluated) * 100);
-                            let bgClass = "bg-rose-100 text-rose-800 font-bold";
-                            if (pct === 100) bgClass = "bg-emerald-600 text-white font-extrabold";
-                            else if (pct >= 80) bgClass = "bg-emerald-100 text-emerald-800 font-bold";
-                            else if (pct >= 50) bgClass = "bg-amber-100 text-amber-800 font-bold";
-
-                            if (pKey === '2026-YEAR') {
-                                bgClass += " text-sm font-extrabold ring-2 ring-hospital-600";
-                            }
-
-                            trHtml += `<td class="p-3 border border-slate-200 ${bgClass}">${pct}%</td>`;
+                        if (evaluated > 0) {
+                            const pct = Math.round((achieved / evaluated) * 100);
+                            const colorClass = pct >= 80 ? 'bg-emerald-100 text-emerald-800 border-emerald-300 font-bold' : 'bg-rose-100 text-rose-800 border-rose-300 font-bold';
+                            tds += `<td class="py-2.5 px-3"><span class="px-3 py-1 rounded border text-xs inline-block ${colorClass}">${pct}%</span></td>`;
                         } else {
-                            trHtml += `<td class="p-3 border border-slate-200 bg-slate-100 text-slate-400">-</td>`;
+                            tds += `<td class="py-2.5 px-3"><span class="px-3 py-1 rounded bg-slate-100 text-slate-400 text-xs inline-block">-</span></td>`;
                         }
                     });
 
-                    trHtml += `</tr>`;
-                    tbody.innerHTML += trHtml;
+                    tr.innerHTML = tds;
+                    body.appendChild(tr);
                 });
             }
 
-            const cardsGrid = document.getElementById('unitPerformanceCardsGrid');
-            cardsGrid.innerHTML = '';
+            // Populate unit performance summary cards
+            if (grid) {
+                grid.innerHTML = '';
+                const pData = getPeriodData(currentSelectedMonth);
 
-            const currentPeriodData = getPeriodData(currentSelectedMonth);
+                units.forEach(u => {
+                    const unitInds = appState.master.filter(i => i.unit === u);
+                    let achieved = 0;
+                    let evaluated = 0;
 
-            units.forEach(unitName => {
-                const unitIndicators = appState.master.filter(i => i.unit === unitName);
-                const totalInd = unitIndicators.length;
-                let monthAchievedActive = 0;
-                let monthEvaluatedActive = 0;
+                    unitInds.forEach(ind => {
+                        const d = pData[ind.id];
+                        const st = evaluateStatus(ind, d);
+                        if (st.code === 'ACHIEVED') { achieved++; evaluated++; }
+                        else if (st.code === 'NOT_ACHIEVED') { evaluated++; }
+                    });
 
-                unitIndicators.forEach(ind => {
-                    const st = evaluateStatus(ind, currentPeriodData[ind.id]);
-                    if (st.code === 'ACHIEVED') {
-                        monthAchievedActive++;
-                        monthEvaluatedActive++;
-                    } else if (st.code === 'NOT_ACHIEVED') {
-                        monthEvaluatedActive++;
-                    }
+                    const pct = evaluated > 0 ? Math.round((achieved / evaluated) * 100) : 0;
+                    const card = document.createElement('div');
+                    card.className = "bg-white rounded-xl shadow-sm border border-slate-200 p-4 space-y-2";
+                    card.innerHTML = `
+                        <div class="flex items-center justify-between border-b pb-2">
+                            <h4 class="font-bold text-slate-800 text-sm truncate">${u}</h4>
+                            <span class="text-xs font-bold px-2 py-0.5 rounded ${pct >= 80 ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">${pct}%</span>
+                        </div>
+                        <div class="text-xs text-slate-500 space-y-1">
+                            <div class="flex justify-between"><span>Indikator Tercapai:</span> <strong class="text-slate-800">${achieved} / ${unitInds.length}</strong></div>
+                            <div class="flex justify-between"><span>Status Evaluasi:</span> <strong class="${pct >= 80 ? 'text-emerald-600' : 'text-rose-600'}">${pct >= 80 ? 'Sangat Baik' : 'Perlu Perbaikan'}</strong></div>
+                        </div>
+                    `;
+                    grid.appendChild(card);
                 });
-
-                const cardPct = monthEvaluatedActive > 0 ? Math.round((monthAchievedActive / monthEvaluatedActive) * 100) : 0;
-
-                cardsGrid.innerHTML += `
-                    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 hover:shadow-md transition space-y-3">
-                        <div class="flex items-center justify-between pb-2 border-b border-slate-100">
-                            <h4 class="font-bold text-slate-800 text-sm">${unitName}</h4>
-                            <span class="text-xs font-bold px-2 py-0.5 rounded ${cardPct >= 80 ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">${cardPct}% Kepatuhan</span>
-                        </div>
-                        <div class="text-xs text-slate-600 space-y-1">
-                            <div class="flex justify-between"><span>Total Indikator:</span> <span class="font-bold">${totalInd}</span></div>
-                            <div class="flex justify-between"><span>Tercapai (${MONTH_NAMES[currentSelectedMonth] || currentSelectedMonth}):</span> <span class="font-bold text-emerald-600">${monthAchievedActive}</span></div>
-                            <div class="flex justify-between"><span>Tidak Tercapai:</span> <span class="font-bold text-rose-600">${monthEvaluatedActive - monthAchievedActive}</span></div>
-                        </div>
-                        <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
-                            <div class="bg-hospital-500 h-full transition-all duration-300" style="width: ${cardPct}%"></div>
-                        </div>
-                    </div>
-                `;
-            });
+            }
         }
 
-        function openEditModal(id) {
+        function openEditModal(indId) {
             if (!isAuthenticated) {
                 openLoginModal();
                 return;
             }
-            editingIndicatorId = id;
-            const ind = appState.master.find(i => i.id === id);
-            const data = (appState.monthlyData[currentSelectedMonth] || {})[id] || {};
 
-            document.getElementById('modalIndicatorUnit').innerText = ind.unit;
-            document.getElementById('modalIndicatorTitle').innerText = `[${ind.kode}] ${ind.indikator}`;
-            document.getElementById('modalIndicatorStandard').innerText = `Standar: ${ind.standar || 'Baku Mutu'}`;
+            editingIndicatorId = indId;
+            const ind = appState.master.find(i => i.id === indId);
+            if (!ind) return;
 
-            document.getElementById('modalNumerator').value = data.numerator !== null && data.numerator !== undefined ? data.numerator : '';
-            document.getElementById('modalDenominator').value = data.denominator !== null && data.denominator !== undefined ? data.denominator : '';
-            document.getElementById('modalCapaianNilai').value = data.capaian_nilai !== null && data.capaian_nilai !== undefined ? data.capaian_nilai : '';
-            document.getElementById('modalCapaianDisplay').value = data.capaian_display || '';
-            document.getElementById('modalKeterangan').value = data.keterangan || '';
+            const mData = (appState.monthlyData[currentSelectedMonth] || {})[indId] || {};
 
-            document.getElementById('editModal').classList.remove('hidden');
+            const unitEl = document.getElementById('modalIndicatorUnit');
+            const titleEl = document.getElementById('modalIndicatorTitle');
+            const stdEl = document.getElementById('modalIndicatorStandard');
+
+            if (unitEl) unitEl.innerText = ind.unit;
+            if (titleEl) titleEl.innerText = `${ind.kode} - ${ind.indikator}`;
+            if (stdEl) stdEl.innerText = `Standar: ${ind.standar || 'N/A'}`;
+
+            const numInput = document.getElementById('modalNumerator');
+            const denInput = document.getElementById('modalDenominator');
+            const valInput = document.getElementById('modalCapaianNilai');
+            const dispInput = document.getElementById('modalCapaianDisplay');
+            const ketInput = document.getElementById('modalKeterangan');
+
+            if (numInput) numInput.value = mData.numerator !== undefined && mData.numerator !== null ? mData.numerator : '';
+            if (denInput) denInput.value = mData.denominator !== undefined && mData.denominator !== null ? mData.denominator : '';
+            if (valInput) valInput.value = mData.capaian_nilai !== undefined && mData.capaian_nilai !== null ? mData.capaian_nilai : '';
+            if (dispInput) dispInput.value = mData.capaian_display !== undefined && mData.capaian_display !== null ? mData.capaian_display : '';
+            if (ketInput) ketInput.value = mData.keterangan || '';
+
+            const modal = document.getElementById('editModal');
+            if (modal) modal.classList.remove('hidden');
         }
 
         function closeEditModal() {
-            document.getElementById('editModal').classList.add('hidden');
+            const modal = document.getElementById('editModal');
+            if (modal) modal.classList.add('hidden');
             editingIndicatorId = null;
         }
 
         function calculateModalCapaian() {
             if (!editingIndicatorId) return;
             const ind = appState.master.find(i => i.id === editingIndicatorId);
-            const num = parseFloat(document.getElementById('modalNumerator').value);
-            const den = parseFloat(document.getElementById('modalDenominator').value);
+            if (!ind) return;
+
+            const numInput = document.getElementById('modalNumerator');
+            const denInput = document.getElementById('modalDenominator');
+            const valInput = document.getElementById('modalCapaianNilai');
+            const dispInput = document.getElementById('modalCapaianDisplay');
+
+            if (!numInput || !denInput || !valInput || !dispInput) return;
+
+            const num = parseFloat(numInput.value);
+            const den = parseFloat(denInput.value);
 
             if (!isNaN(num) && !isNaN(den) && den > 0) {
+                let calcVal = 0;
+                let calcDisp = '';
+
                 if (ind.satuan === '%') {
-                    const pct = Math.round(((num / den) * 100) * 100) / 100;
-                    document.getElementById('modalCapaianNilai').value = pct;
-                    document.getElementById('modalCapaianDisplay').value = `${pct}%`;
+                    calcVal = Math.round(((num / den) * 100) * 100) / 100;
+                    calcDisp = `${calcVal}%`;
                 } else if (ind.satuan === 'menit') {
-                    const min = Math.round((num / den) * 100) / 100;
-                    document.getElementById('modalCapaianNilai').value = min;
-                    document.getElementById('modalCapaianDisplay').value = `${min} menit`;
+                    calcVal = Math.round((num / den) * 100) / 100;
+                    calcDisp = `${calcVal} menit`;
+                } else {
+                    calcVal = Math.round((num / den) * 100) / 100;
+                    calcDisp = `${calcVal} ${ind.satuan || ''}`.trim();
                 }
+
+                valInput.value = calcVal;
+                dispInput.value = calcDisp;
             }
         }
 
         function saveEditModalData() {
             if (!editingIndicatorId) return;
-            const numVal = document.getElementById('modalNumerator').value;
-            const denVal = document.getElementById('modalDenominator').value;
-            const valVal = document.getElementById('modalCapaianNilai').value;
-            const dispVal = document.getElementById('modalCapaianDisplay').value;
-            const ketVal = document.getElementById('modalKeterangan').value;
+            if (!appState.monthlyData[currentSelectedMonth]) appState.monthlyData[currentSelectedMonth] = {};
 
-            if (!appState.monthlyData[currentSelectedMonth]) {
-                appState.monthlyData[currentSelectedMonth] = {};
-            }
+            const numInput = document.getElementById('modalNumerator');
+            const denInput = document.getElementById('modalDenominator');
+            const valInput = document.getElementById('modalCapaianNilai');
+            const dispInput = document.getElementById('modalCapaianDisplay');
+            const ketInput = document.getElementById('modalKeterangan');
 
             appState.monthlyData[currentSelectedMonth][editingIndicatorId] = {
-                numerator: numVal !== '' ? parseFloat(numVal) : null,
-                denominator: denVal !== '' ? parseFloat(denVal) : null,
-                capaian_nilai: valVal !== '' ? parseFloat(valVal) : null,
-                capaian_display: dispVal || '-',
-                keterangan: ketVal || ''
+                numerator: numInput && numInput.value !== '' ? parseFloat(numInput.value) : null,
+                denominator: denInput && denInput.value !== '' ? parseFloat(denInput.value) : null,
+                capaian_nilai: valInput && valInput.value !== '' ? parseFloat(valInput.value) : null,
+                capaian_display: dispInput && dispInput.value !== '' ? dispInput.value : '-',
+                keterangan: ketInput ? ketInput.value : ''
             };
 
             saveStorageState();
             closeEditModal();
             renderDashboard();
-            showToast("Data indikator berhasil diperbarui!", "success");
+            showToast("Perubahan data indikator berhasil disimpan!", "success");
         }
 
-        function openConfirmModal(title, message, callback) {
-            document.getElementById('confirmModalTitle').innerText = title;
-            document.getElementById('confirmModalMessage').innerText = message;
-            confirmActionCallback = callback;
-            document.getElementById('confirmModal').classList.remove('hidden');
-        }
+        function handlePrintReport() {
+            const activePeriod = currentSelectedMonth;
+            const periodName = MONTH_NAMES[activePeriod] || activePeriod;
+            const data = getPeriodData(activePeriod);
+            
+            const today = new Date();
+            const formattedDate = today.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+            const printDateEl = document.getElementById('printCurrentDate');
+            if (printDateEl) printDateEl.innerText = formattedDate;
 
-        function closeConfirmModal(confirmed) {
-            document.getElementById('confirmModal').classList.add('hidden');
-            if (confirmed && typeof confirmActionCallback === 'function') {
-                confirmActionCallback();
-            }
-            confirmActionCallback = null;
-        }
+            const printPeriodTitle = document.getElementById('printReportPeriodTitle');
+            if (printPeriodTitle) printPeriodTitle.innerText = `Periode Evaluasi: ${periodName}`;
 
-        function handleResetWithAuth() {
-            if (!isAuthenticated) {
-                openLoginModal();
-                return;
-            }
-            openConfirmModal(
-                "Reset ke Data Default?",
-                "Tindakan ini akan mengosongkan semua bulan dan mengembalikan data April 2026 ke standar contoh awal.",
-                () => {
-                    appState.monthlyData = {
-                        "2026-01": {}, "2026-02": {}, "2026-03": {},
-                        "2026-04": JSON.parse(JSON.stringify(DEFAULT_APRIL_DATA)),
-                        "2026-05": {}, "2026-06": {}, "2026-07": {}, "2026-08": {},
-                        "2026-09": {}, "2026-10": {}, "2026-11": {}, "2026-12": {}
-                    };
-                    saveStorageState();
-                    renderDashboard();
-                    showToast("Data berhasil direset ke standar default!", "success");
+            const modalBody = document.getElementById('printModalBody');
+            if (!modalBody) return;
+
+            let rowsHtml = '';
+            let no = 1;
+            appState.master.forEach(ind => {
+                const d = data[ind.id] || {};
+                const st = evaluateStatus(ind, d);
+                const numDisp = d.numerator !== null && d.numerator !== undefined ? d.numerator : '-';
+                const denDisp = d.denominator !== null && d.denominator !== undefined ? d.denominator : '-';
+                const ndStr = (numDisp !== '-' || denDisp !== '-') ? `${numDisp} / ${denDisp}` : '-';
+
+                rowsHtml += `
+                    <tr class="border-b border-slate-200 text-[11px]">
+                        <td class="py-2 px-2 text-center font-medium">${no++}</td>
+                        <td class="py-2 px-2 font-semibold text-slate-800">${ind.unit}</td>
+                        <td class="py-2 px-1 text-center font-bold text-sky-800">${ind.kode}</td>
+                        <td class="py-2 px-3 font-medium text-slate-800">${ind.indikator}</td>
+                        <td class="py-2 px-2 text-slate-600">${ind.standar || '-'}</td>
+                        <td class="py-2 px-2 text-center text-slate-600">${ndStr}</td>
+                        <td class="py-2 px-2 text-center font-bold text-slate-900">${d.capaian_display || '-'}</td>
+                        <td class="py-2 px-2 text-center font-bold">${st.label}</td>
+                        <td class="py-2 px-2 text-slate-600 text-[10px]">${d.keterangan || '-'}</td>
+                    </tr>
+                `;
+            });
+
+            modalBody.innerHTML = `
+                <div class="border-b-2 border-slate-900 pb-3 mb-4 flex items-center justify-between">
+                    <div>
+                        <h2 class="text-xs font-bold uppercase tracking-wider text-slate-900">PEMERINTAH KABUPATEN KAPUAS</h2>
+                        <h1 class="text-base font-extrabold text-slate-900 uppercase">RSUD Dr. H. SOEMARNO SOSROATMODJO</h1>
+                        <p class="text-[10px] text-slate-700">Jl. Tambun Bungai No. 16, Kuala Kapuas, Kalimantan Tengah | Seksi Mutu Pelayanan</p>
+                    </div>
+                    <div class="text-right">
+                        <span class="text-[10px] font-bold px-2 py-1 bg-slate-100 rounded border border-slate-300">DOKUMEN RESMI</span>
+                    </div>
+                </div>
+                
+                <div class="text-center my-3">
+                    <h3 class="text-sm font-bold text-slate-900 uppercase underline">LAPORAN CAPAIAN INDIKATOR MUTU UNIT PENUNJANG</h3>
+                    <p class="text-xs font-semibold text-slate-700 mt-0.5">Periode Evaluasi: ${periodName}</p>
+                </div>
+
+                <table class="w-full text-left text-xs border-collapse mt-3">
+                    <thead class="bg-slate-100 text-slate-800 uppercase font-bold text-[10px] border-y border-slate-400">
+                        <tr>
+                            <th class="py-2 px-2 text-center w-8">No</th>
+                            <th class="py-2 px-2 w-28">Unit</th>
+                            <th class="py-2 px-1 text-center w-12">Kode</th>
+                            <th class="py-2 px-3">Indikator Mutu</th>
+                            <th class="py-2 px-2 w-24">Standar</th>
+                            <th class="py-2 px-2 text-center w-24">N / D</th>
+                            <th class="py-2 px-2 text-center w-20">Capaian</th>
+                            <th class="py-2 px-2 text-center w-24">Status</th>
+                            <th class="py-2 px-2 w-36">Keterangan</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${rowsHtml}
+                    </tbody>
+                </table>
+
+                <div class="mt-8 pt-4 border-t border-slate-300 text-xs">
+                    <div class="flex justify-between items-start text-slate-900">
+                        <div class="text-center w-56">
+                            <p>Mengetahui,</p>
+                            <p class="font-bold mt-1">Kepala Seksi Mutu Pelayanan</p>
+                            <div class="h-16"></div>
+                            <p class="font-bold underline">(...................................................)</p>
+                            <p class="text-[10px]">NIP. ...........................................</p>
+                        </div>
+                        <div class="text-center w-56">
+                            <p>Kuala Kapuas, ${formattedDate}</p>
+                            <p class="font-bold mt-1">Penanggung Jawab Data Mutu</p>
+                            <div class="h-16"></div>
+                            <p class="font-bold underline">(...................................................)</p>
+                            <p class="text-[10px]">NIP. ...........................................</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            const printModal = document.getElementById('printModal');
+            if (printModal) printModal.classList.remove('hidden');
+
+            setTimeout(() => {
+                try {
+                    window.print();
+                } catch (err) {
+                    console.warn("Direct window.print restricted, print modal opened.", err);
                 }
-            );
+            }, 300);
+        }
+
+        function triggerModalPrint() {
+            try {
+                window.print();
+            } catch (e) {
+                openPrintWindow();
+            }
+        }
+
+        function openPrintWindow() {
+            const modalBody = document.getElementById('printModalBody');
+            if (!modalBody) return;
+            const printWin = window.open('', '_blank', 'width=900,height=750');
+            if (printWin) {
+                printWin.document.write(`
+                    <!DOCTYPE html>
+                    <html lang="id">
+                    <head>
+                        <meta charset="UTF-8">
+                        <title>Laporan Mutu RSUD Dr. H. Soemarno Sosroatmodjo</title>
+                        <script src="https://cdn.tailwindcss.com"><\/script>
+                        <style>
+                            body { font-family: 'Inter', sans-serif; padding: 24px; color: #0f172a; background: white; }
+                            table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+                            th, td { border: 1px solid #cbd5e1; padding: 6px 8px; font-size: 11px; text-align: left; }
+                            th { background-color: #f1f5f9; font-weight: bold; }
+                            @media print { body { padding: 0; } }
+                        </style>
+                    </head>
+                    <body>
+                        ${modalBody.innerHTML}
+                        <script>
+                            window.onload = function() {
+                                setTimeout(function() { window.print(); }, 400);
+                            }
+                        <\/script>
+                    </body>
+                    </html>
+                `);
+                printWin.document.close();
+            } else {
+                showToast("Harap izinkan Pop-up browser Anda untuk mencetak dokumen.", "error");
+            }
+        }
+
+        function closePrintModal() {
+            const modal = document.getElementById('printModal');
+            if (modal) modal.classList.add('hidden');
         }
 
         function exportJSON() {
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appState, null, 2));
-            const dlAnchor = document.createElement('a');
-            dlAnchor.setAttribute("href", dataStr);
-            dlAnchor.setAttribute("download", `Mutu_RSUD_2026_Backup.json`);
-            document.body.appendChild(dlAnchor);
-            dlAnchor.click();
-            dlAnchor.remove();
-            showToast("Backup data JSON berhasil didownload!", "success");
+            const jsonStr = JSON.stringify(appState, null, 2);
+            const blob = new Blob([jsonStr], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `Dashboard_Mutu_RSUD_2026_${currentSelectedMonth}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showToast("File JSON berhasil diexport!", "success");
         }
 
         function handleImportWithAuth(event) {
@@ -1706,6 +1926,7 @@
                 openLoginModal();
                 return;
             }
+
             const file = event.target.files[0];
             if (!file) return;
 
@@ -1729,83 +1950,124 @@
         }
 
         function exportCSV() {
-            const periodData = getPeriodData(currentSelectedMonth);
-            let csvContent = "\uFEFF";
-            csvContent += "ID;Unit;Kode;Indikator Mutu;Standar;Numerator;Denominator;Capaian Nilai;Capaian Display;Status;Keterangan\n";
+            const data = getPeriodData(currentSelectedMonth);
+            let csvContent = "data:text/csv;charset=utf-8,";
+            csvContent += "ID,Unit,Kode,Indikator,Standar,Numerator,Denominator,Capaian Nilai,Capaian Display,Status,Keterangan\n";
 
             appState.master.forEach(ind => {
-                const data = periodData[ind.id] || {};
-                const st = evaluateStatus(ind, data);
+                const item = data[ind.id] || {};
+                const st = evaluateStatus(ind, item);
+                const num = item.numerator !== null && item.numerator !== undefined ? item.numerator : '';
+                const den = item.denominator !== null && item.denominator !== undefined ? item.denominator : '';
+                const val = item.capaian_nilai !== null && item.capaian_nilai !== undefined ? item.capaian_nilai : '';
+                const disp = (item.capaian_display || '-').replace(/"/g, '""');
+                const ket = (item.keterangan || '').replace(/"/g, '""');
 
-                const row = [
-                    ind.id,
-                    `"${ind.unit}"`,
-                    `"${ind.kode}"`,
-                    `"${ind.indikator.replace(/"/g, '""')}"`,
-                    `"${(ind.standar || '').replace(/"/g, '""')}"`,
-                    data.numerator !== null && data.numerator !== undefined ? data.numerator : '',
-                    data.denominator !== null && data.denominator !== undefined ? data.denominator : '',
-                    data.capaian_nilai !== null && data.capaian_nilai !== undefined ? data.capaian_nilai : '',
-                    `"${(data.capaian_display || '').replace(/"/g, '""')}"`,
-                    `"${st.label}"`,
-                    `"${(data.keterangan || '').replace(/"/g, '""')}"`
-                ];
-                csvContent += row.join(";") + "\n";
+                csvContent += `"${ind.id}","${ind.unit}","${ind.kode}","${ind.indikator.replace(/"/g, '""')}","${ind.standar || ''}","${num}","${den}","${val}","${disp}","${st.label}","${ket}"\n`;
             });
 
-            const encodedUri = encodeURI("data:text/csv;charset=utf-8," + csvContent);
+            const encodedUri = encodeURI(csvContent);
             const link = document.createElement("a");
             link.setAttribute("href", encodedUri);
-            link.setAttribute("download", `Report_Mutu_RSUD_${currentSelectedMonth}.csv`);
+            link.setAttribute("download", `Data_Mutu_${currentSelectedMonth}.csv`);
             document.body.appendChild(link);
             link.click();
-            link.remove();
-            showToast(`File CSV untuk ${MONTH_NAMES[currentSelectedMonth] || currentSelectedMonth} berhasil diexport!`, "success");
+            document.body.removeChild(link);
+            showToast("File CSV berhasil diexport!", "success");
         }
 
-        function showToast(message, type = "success") {
-            const toast = document.getElementById('toast');
-            const icon = document.getElementById('toastIcon');
-            const msg = document.getElementById('toastMessage');
-
-            msg.innerText = message;
-            if (type === "success") {
-                icon.className = "fa-solid fa-circle-check text-emerald-400 text-lg";
-            } else if (type === "error") {
-                icon.className = "fa-solid fa-circle-xmark text-rose-400 text-lg";
-            } else {
-                icon.className = "fa-solid fa-circle-info text-sky-400 text-lg";
+        function handleResetWithAuth() {
+            if (!isAuthenticated) {
+                openLoginModal();
+                return;
             }
 
+            openConfirmModal("Reset Data ke Default", "Apakah Anda yakin ingin mengembalikan data ke format bawaan (hanya April 2026 terisi)? Semua perubahan lain akan dihapus.", function() {
+                appState.monthlyData = {
+                    "2026-01": {}, "2026-02": {}, "2026-03": {},
+                    "2026-04": JSON.parse(JSON.stringify(DEFAULT_APRIL_DATA)),
+                    "2026-05": {}, "2026-06": {}, "2026-07": {}, "2026-08": {},
+                    "2026-09": {}, "2026-10": {}, "2026-11": {}, "2026-12": {}
+                };
+                saveStorageState();
+                renderDashboard();
+                showToast("Data berhasil direset ke default!", "success");
+            });
+        }
+
+        function openConfirmModal(title, message, callback) {
+            const modal = document.getElementById('confirmModal');
+            const titleEl = document.getElementById('confirmModalTitle');
+            const msgEl = document.getElementById('confirmModalMessage');
+
+            if (titleEl) titleEl.innerText = title;
+            if (msgEl) msgEl.innerText = message;
+            confirmActionCallback = callback;
+
+            if (modal) modal.classList.remove('hidden');
+        }
+
+        function closeConfirmModal(confirmed) {
+            const modal = document.getElementById('confirmModal');
+            if (modal) modal.classList.add('hidden');
+
+            if (confirmed && typeof confirmActionCallback === 'function') {
+                confirmActionCallback();
+            }
+            confirmActionCallback = null;
+        }
+
+        function showToast(message, type = "info") {
+            const toast = document.getElementById('toast');
+            const msgEl = document.getElementById('toastMessage');
+            const iconEl = document.getElementById('toastIcon');
+
+            if (!toast || !msgEl || !iconEl) return;
+
+            msgEl.innerText = message;
+            if (type === 'success') iconEl.className = "fa-solid fa-circle-check text-emerald-400 text-lg";
+            else if (type === 'error') iconEl.className = "fa-solid fa-circle-xmark text-rose-400 text-lg";
+            else iconEl.className = "fa-solid fa-circle-info text-sky-400 text-lg";
+
             toast.classList.remove('translate-y-20', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+
             setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
                 toast.classList.add('translate-y-20', 'opacity-0');
             }, 3000);
         }
 
+        function populateFilterDropdowns() {
+            const unitSelect = document.getElementById('filterUnit');
+            const kodeSelect = document.getElementById('filterKode');
+
+            if (unitSelect) {
+                const units = Array.from(new Set(appState.master.map(i => i.unit)));
+                unitSelect.innerHTML = '<option value="">Semua Unit</option>';
+                units.forEach(u => {
+                    const opt = document.createElement('option');
+                    opt.value = u;
+                    opt.innerText = u;
+                    unitSelect.appendChild(opt);
+                });
+            }
+
+            if (kodeSelect) {
+                const kodes = Array.from(new Set(appState.master.map(i => i.kode)));
+                kodeSelect.innerHTML = '<option value="">Semua Kode (K.7 - K.18)</option>';
+                kodes.forEach(k => {
+                    const opt = document.createElement('option');
+                    opt.value = k;
+                    opt.innerText = k;
+                    kodeSelect.appendChild(opt);
+                });
+            }
+        }
+
         window.onload = function() {
             loadStorageState();
-
-            // Populate filter selects
-            const unitSelect = document.getElementById('filterUnit');
-            const units = Array.from(new Set(appState.master.map(i => i.unit)));
-            units.forEach(u => {
-                const opt = document.createElement('option');
-                opt.value = u;
-                opt.innerText = u;
-                unitSelect.appendChild(opt);
-            });
-
-            const kodeSelect = document.getElementById('filterKode');
-            const kodes = Array.from(new Set(appState.master.map(i => i.kode)));
-            kodes.forEach(k => {
-                const opt = document.createElement('option');
-                opt.value = k;
-                opt.innerText = k;
-                kodeSelect.appendChild(opt);
-            });
-
-            populateTrendDropdown();
+            populateFilterDropdowns();
             updateAuthUI();
             renderDashboard();
         };
